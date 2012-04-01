@@ -4,21 +4,21 @@ import MockMockMock
 
 from InteractiveCommandLine import *
 
-class CommandLineProgramTestCase( unittest.TestCase ):
-    def testBasicExecution( self ):
-        p = Program()
-        m = MockMockMock.Mock( "command" )
-        m.expect.execute()
-        p.addCommand( "test", m.object )
-        p.execute( [ "program", "test" ] )
-        m.tearDown()
+class CommandLineCommandExecution( unittest.TestCase ):
+    def setUp( self ):
+        self.command = MockMockMock.Mock( "command" )
+        self.program = Program()
+        self.program.addCommand( "test", self.command.object )
 
-    def testExecutionWithArguments( self ):
-        p = Program()
-        m = MockMockMock.Mock( "command" )
-        m.expect.execute( "foo", "bar" )
-        p.addCommand( "test", m.object )
-        p.execute( [ "program", "test", "foo", "bar" ] )
-        m.tearDown()
+    def tearDown( self ):
+        self.command.tearDown()
+    
+    def testWithoutArguments( self ):
+        self.command.expect.execute()
+        self.program.execute( [ "program", "test" ] )
+
+    def testWithArguments( self ):
+        self.command.expect.execute( "foo", "bar" )
+        self.program.execute( [ "program", "test", "foo", "bar" ] )
 
 unittest.main()
