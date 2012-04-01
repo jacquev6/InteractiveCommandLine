@@ -6,19 +6,21 @@ from InteractiveCommandLine import *
 
 class CommandLineCommandExecution( unittest.TestCase ):
     def setUp( self ):
-        self.command = MockMockMock.Mock( "command" )
+        self.command = Command()
+        self.execute = MockMockMock.Mock( "execute" )
+        self.command.execute = self.execute.object
         self.program = Program()
-        self.program.addCommand( "test", self.command.object )
+        self.program.addCommand( "test", self.command )
 
     def tearDown( self ):
-        self.command.tearDown()
+        self.execute.tearDown()
     
     def testWithoutArguments( self ):
-        self.command.expect.execute()
+        self.execute.expect()
         self.program.executeWithArguments( "test" )
 
     def testWithArguments( self ):
-        self.command.expect.execute( "foo", "bar" )
+        self.execute.expect( "foo", "bar" )
         self.program.executeWithArguments( "test", "foo", "bar" )
 
 unittest.main()
