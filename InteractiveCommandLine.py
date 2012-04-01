@@ -8,7 +8,7 @@ class Program:
 
     def execute( self, arguments ):
         command = arguments[ 1 ]
-        self.__commands[ command ].execute()
+        self.__commands[ command ].execute( *arguments[ 2: ] )
 
     def addCommand( self, name, command ):
         self.__commands[ name ] = command
