@@ -1,5 +1,3 @@
-import sys
-
 import InteractiveCommandLine as ICL
 
 class ExampleProgram( ICL.Program ):
@@ -14,4 +12,4 @@ class ExampleProgram( ICL.Program ):
         def execute( self, *text ):
             print " ".join( text )
 
-ExampleProgram().execute( sys.argv )
+ExampleProgram().execute()

@@ -15,10 +15,10 @@ class CommandLineCommandExecution( unittest.TestCase ):
     
     def testWithoutArguments( self ):
         self.command.expect.execute()
-        self.program.execute( [ "program", "test" ] )
+        self.program.executeWithArguments( "test" )
 
     def testWithArguments( self ):
         self.command.expect.execute( "foo", "bar" )
-        self.program.execute( [ "program", "test", "foo", "bar" ] )
+        self.program.executeWithArguments( "test", "foo", "bar" )
 
 unittest.main()
