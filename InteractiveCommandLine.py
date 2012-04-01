@@ -7,7 +7,8 @@ class Program:
         self.__commands = dict()
 
     def execute( self, arguments ):
-        pass
+        command = arguments[ 1 ]
+        self.__commands[ command ].execute()
 
     def addCommand( self, name, command ):
         self.__commands[ name ] = command
