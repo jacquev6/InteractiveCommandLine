@@ -16,14 +16,17 @@ class CommandLineCommandExecution( unittest.TestCase ):
 
     def tearDown( self ):
         self.execute.tearDown()
+
+    def __executeProgram( self, *arguments ):
+        CommandContainer.execute( self.program, *arguments )
     
     def testWithoutArguments( self ):
         self.execute.expect()
-        self.program.executeWithArguments( "test" )
+        self.__executeProgram( "test" )
 
     def testWithArguments( self ):
         self.execute.expect( "foo", "bar" )
-        self.program.executeWithArguments( "test", "foo", "bar" )
+        self.__executeProgram( "test", "foo", "bar" )
 
     # def testWithOption( self ):
         # self.optionHandler.expect()
