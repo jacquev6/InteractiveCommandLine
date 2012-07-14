@@ -22,22 +22,27 @@ class CommandLineCommandExecution( unittest.TestCase ):
     def tearDown( self ):
         self.commandHandler.tearDown()
     
-    def testWithoutArguments( self ):
+    def testCommandWithoutArguments( self ):
         self.commandHandler.expect()
         self.program._execute( "test" )
 
-    def testWithArguments( self ):
+    def testCommandWithArguments( self ):
         self.commandHandler.expect( "foo", "bar" )
         self.program._execute( "test", "foo", "bar" )
 
-    def testWithOption( self ):
+    def testCommandWithOptionWithoutArguments( self ):
         self.optionHandler.expect( [] ).andReturn( [] )
         self.commandHandler.expect()
         self.program._execute( "test", "--option" )
 
-    def testWithOptionWithArgument( self ):
-        self.optionHandler.expect( [ "value" ] ).andReturn( [] )
+    def testCommandWithOptionWithArguments( self ):
+        self.optionHandler.expect( [ "foo", "bar" ] ).andReturn( [] )
         self.commandHandler.expect()
-        self.program._execute( "test", "--option", "value" )
+        self.program._execute( "test", "--option", "foo", "bar" )
+
+    def testCommandWithArgumentsWithOptionWithArguments( self ):
+        self.optionHandler.expect( [ "foo", "bar", "baz" ] ).andReturn( [ "bar", "baz" ] )
+        self.commandHandler.expect( "bar", "baz" )
+        self.program._execute( "test", "--option", "foo", "bar", "baz" )
 
 unittest.main()
