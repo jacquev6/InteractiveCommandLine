@@ -36,23 +36,23 @@ class CommandLineCommandExecution( unittest.TestCase ):
         self.program._execute( "test", "foo", "bar" )
 
     def testCommandWithOptionWithoutArguments( self ):
-        self.commandOptionHandler.expect( [] ).andReturn( [] )
+        self.commandOptionHandler.expect().andReturn( [] )
         self.commandHandler.expect()
         self.program._execute( "test", "--command-option" )
 
     def testCommandWithOptionWithArguments( self ):
-        self.commandOptionHandler.expect( [ "foo", "bar" ] ).andReturn( [] )
+        self.commandOptionHandler.expect( "foo", "bar" ).andReturn( [] )
         self.commandHandler.expect()
         self.program._execute( "test", "--command-option", "foo", "bar" )
 
     def testCommandWithArgumentsWithOptionWithArguments( self ):
-        self.commandOptionHandler.expect( [ "foo", "bar", "baz" ] ).andReturn( [ "bar", "baz" ] )
+        self.commandOptionHandler.expect( "foo", "bar", "baz" ).andReturn( [ "bar", "baz" ] )
         self.commandHandler.expect( "bar", "baz" )
         self.program._execute( "test", "--command-option", "foo", "bar", "baz" )
 
     def testWithOption( self ):
-        self.programOptionHandler.expect( [ "foo", "test", "--command-option", "bar", "baz" ] ).andReturn( [ "test", "--command-option", "bar", "baz" ] )
-        self.commandOptionHandler.expect( [ "bar", "baz" ] ).andReturn( [ "baz" ] )
+        self.programOptionHandler.expect( "foo", "test", "--command-option", "bar", "baz" ).andReturn( [ "test", "--command-option", "bar", "baz" ] )
+        self.commandOptionHandler.expect( "bar", "baz" ).andReturn( [ "baz" ] )
         self.commandHandler.expect( "baz" )
         self.program._execute( "--program-option", "foo", "test", "--command-option", "bar", "baz" )
 

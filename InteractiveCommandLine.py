@@ -2,7 +2,7 @@ import sys
 
 class Option:
     def consumeArguments( self, arguments ):
-        return self.handle( arguments )
+        return self.handle( *arguments )
 
 class OptionContainer:
     def __init__( self ):
