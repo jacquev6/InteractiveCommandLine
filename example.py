@@ -9,7 +9,7 @@ class ExampleProgram( ICL.Program ):
         def __init__( self ):
             ICL.Command.__init__( self )
 
-        def execute( self, *text ):
+        def handle( self, *text ):
             print " ".join( text )
 
 ExampleProgram().execute()

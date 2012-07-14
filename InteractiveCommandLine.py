@@ -44,4 +44,4 @@ class Program( CommandContainer, OptionContainer ):
         CommandContainer.execute( self, list( arguments ) )
 
     def execute( self ): # pragma no cover
-        self._execute( sys.argv[ 1: ] )
+        self._execute( *sys.argv[ 1: ] )
