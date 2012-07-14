@@ -1,6 +1,9 @@
 import sys
 
 class Option:
+    def __init__( self ):
+        pass
+
     def consumeArguments( self, arguments ):
         return self.handle( *arguments )
 
