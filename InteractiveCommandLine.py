@@ -40,8 +40,14 @@ class CommandContainer:
         self.__commands[ name ] = command
 
 class Program( CommandContainer, OptionContainer ):
+    def __init__( self ):
+        CommandContainer.__init__( self )
+        OptionContainer.__init__( self )
+
     def _execute( self, *arguments ):
-        CommandContainer.execute( self, list( arguments ) )
+        arguments = list( arguments )
+        arguments = self.consumeOptions( arguments )
+        CommandContainer.execute( self, arguments )
 
     def execute( self ): # pragma no cover
         self._execute( *sys.argv[ 1: ] )
