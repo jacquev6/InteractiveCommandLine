@@ -48,7 +48,6 @@ class Program( CommandContainer, OptionContainer ):
         OptionContainer.__init__( self )
 
     def _execute( self, *arguments ):
-        arguments = list( arguments )
         arguments = self.consumeOptions( arguments )
         CommandContainer.execute( self, arguments )
 
