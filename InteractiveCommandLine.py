@@ -1,4 +1,5 @@
 import sys
+import shlex
 
 class Option:
     def __init__( self ):
@@ -35,7 +36,7 @@ class CommandContainer:
     def __init__( self ):
         self.__commands = dict()
 
-    def execute( self, arguments ):
+    def executeCommand( self, arguments ):
         command = self.__commands[ arguments[ 0 ] ]
         command.execute( arguments[ 1: ] )
 
@@ -43,13 +44,28 @@ class CommandContainer:
         self.__commands[ name ] = command
 
 class Program( CommandContainer, OptionContainer ):
-    def __init__( self ):
+    def __init__( self, input = sys.stdin, output = sys.stdout ):
         CommandContainer.__init__( self )
         OptionContainer.__init__( self )
+        self.__input = input
+        self.__output = output
 
     def _execute( self, *arguments ):
         arguments = self.consumeOptions( arguments )
-        CommandContainer.execute( self, arguments )
+        if len( arguments ) > 0:
+            self.executeCommand( arguments )
+        else:
+            self.startShell()
+
+    def startShell( self ):
+        while True:
+            self.__output.write( ">" ) # @todo Do not display the ">" when we receive our commands from a pipe
+            line = self.__input.readline()
+            if line == "":
+                break
+            arguments = shlex.split( line )
+            if len( arguments ) > 0:
+                self.executeCommand( arguments )
 
     def execute( self ): # pragma no cover
         self._execute( *sys.argv[ 1: ] )
