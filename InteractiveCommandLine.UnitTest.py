@@ -6,12 +6,13 @@ from InteractiveCommandLine import *
 
 class TestCase( unittest.TestCase ):
     def setUp( self ):
-        self.input = MockMockMock.Mock( "input" )
-        self.output = MockMockMock.Mock( "output", self.input )
+        self.mocks = MockMockMock.Engine()
+        self.input = self.mocks.create( "input" )
+        self.output = self.mocks.create( "output" )
 
-        self.programOptionHandler = MockMockMock.Mock( "programOptionHandler", self.input )
-        self.commandOptionHandler = MockMockMock.Mock( "commandOptionHandler", self.input )
-        self.commandHandler = MockMockMock.Mock( "commandHandler", self.input )
+        self.programOptionHandler = self.mocks.create( "programOptionHandler" )
+        self.commandOptionHandler = self.mocks.create( "commandOptionHandler" )
+        self.commandHandler = self.mocks.create( "commandHandler" )
 
         self.commandOption = Option()
         self.commandOption.handle = self.commandOptionHandler.object
@@ -28,7 +29,7 @@ class TestCase( unittest.TestCase ):
         self.program.addOption( "program-option", self.programOption )
 
     def tearDown( self ):
-        self.input.tearDown()
+        self.mocks.tearDown()
 
 class CommandLineCommandExecution( TestCase ):
     def testCommandWithoutArguments( self ):
