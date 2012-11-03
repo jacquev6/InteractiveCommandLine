@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+# Copyright 2012 Vincent Jacques
+# vincent@vincent-jacques.net
+
 import unittest
 
 import MockMockMock
@@ -77,5 +82,3 @@ class InteractiveCommandExecution( TestCase ):
         self.commandHandler.expect( "foo", "bar" )
         self.expectInviteAndExit()
         self.program._execute()
-
-unittest.main()
