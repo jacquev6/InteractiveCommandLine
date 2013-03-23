@@ -27,7 +27,7 @@ if __name__ == "__main__":
         description="Framework for interactive and command-line programs. Don't use it (yet)",
         author="Vincent Jacques",
         author_email="vincent@vincent-jacques.net",
-        url="",
+        url="http://jacquev6.github.com/InteractiveCommandLine",
         long_description=textwrap.dedent("""\
         """),
         packages=[
