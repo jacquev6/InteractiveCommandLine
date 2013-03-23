@@ -45,10 +45,10 @@ if __name__ == "__main__":
             "Programming Language :: Python",
             "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
-            # "Programming Language :: Python :: 3",
-            # "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.3",
             "Environment :: Console",
         ],
         test_suite="InteractiveCommandLine.tests.AllTests",
-        # use_2to3=True
+        use_2to3=True
     )
