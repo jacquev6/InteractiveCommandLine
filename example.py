@@ -1,44 +1,51 @@
 import InteractiveCommandLine as ICL
 
 
+class Printer:
+    def __init__(self):
+        self.verbose = False
+        self.upper = False
+
+    def do(self, message):
+        if self.verbose:
+            message = "Verbose " + message
+        if self.upper:
+            message = message.upper()
+        print message
+
+
 class ExampleProgram(ICL.Program):
     def __init__(self):
         ICL.Program.__init__(self)
-        self.addCommand("echo", self.Echo(self))
-        self.addOption("verbose", self.Verbose(self))
-        self.verbose = False
+        self.__printer = Printer()
+        self.addCommand("echo", self.Echo(self.__printer))
+        self.addOption("verbose", self.Verbose(self.__printer))
 
     class Verbose(ICL.Option):
-        def __init__(self, program):
+        def __init__(self, printer):
             ICL.Option.__init__(self)
-            self.__program = program
+            self.__printer = printer
 
         def handle(self, *args):
-            self.__program.verbose = True
+            self.__printer.verbose = True
             return args
 
     class Echo(ICL.Command):
-        def __init__(self, program):
+        def __init__(self, printer):
             ICL.Command.__init__(self)
-            self.__program = program
-            self.upper = False
-            self.addOption("upper", self.Upper(self))
+            self.__printer = printer
+            self.addOption("upper", self.Upper(printer))
 
         class Upper(ICL.Option):
-            def __init__(self, echo):
+            def __init__(self, printer):
                 ICL.Option.__init__(self)
-                self.__echo = echo
+                self.__printer = printer
 
             def handle(self, *args):
-                self.__echo.upper = True
+                self.__printer.upper = True
                 return args
 
         def handle(self, *text):
-            toPrint = " ".join(text)
-            if self.__program.verbose:
-                toPrint = "Verbose " + toPrint
-            if self.upper:
-                toPrint = toPrint.upper()
-            print toPrint
+            self.__printer.do(" ".join(text))
 
 ExampleProgram().execute()
