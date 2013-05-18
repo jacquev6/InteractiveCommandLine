@@ -26,7 +26,7 @@ class ExampleProgram(ICL.Program):
             ICL.Option.__init__(self)
             self.__printer = printer
 
-        def handle(self, *args):
+        def activate(self, *args):
             self.__printer.verbose = True
             return args
 
@@ -41,11 +41,11 @@ class ExampleProgram(ICL.Program):
                 ICL.Option.__init__(self)
                 self.__printer = printer
 
-            def handle(self, *args):
+            def activate(self):
                 self.__printer.upper = True
                 return args
 
-        def handle(self, *text):
+        def execute(self, *text):
             self.__printer.do(" ".join(text))
 
 ExampleProgram().execute()

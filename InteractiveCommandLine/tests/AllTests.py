@@ -26,18 +26,20 @@ class TestCase(unittest.TestCase):
         self.input = self.mocks.create("input")
         self.output = self.mocks.create("output")
 
-        self.commandOptionHandler = self.mocks.create("commandOptionHandler")
         self.commandOption = Option()
-        self.commandOption.handle = self.commandOptionHandler.object
+        self.commandOptionActivate = self.mocks.create("commandOptionActivate")
+        self.commandOption.activate = self.commandOptionActivate.object
 
-        self.programOptionHandler = self.mocks.create("programOptionHandler")
         self.programOption = Option()
-        self.programOption.handle = self.programOptionHandler.object
+        self.programOptionActivate = self.mocks.create("programOptionActivate")
+        self.programOption.activate = self.programOptionActivate.object
+        self.programOptionDeactivate = self.mocks.create("programOptionDeactivate")
+        self.programOption.deactivate = self.programOptionDeactivate.object
 
-        self.commandHandler = self.mocks.create("commandHandler")
         self.command = Command()
         self.command.addOption("command-option", self.commandOption)
-        self.command.handle = self.commandHandler.object
+        self.commandExecute = self.mocks.create("commandExecute")
+        self.command.execute = self.commandExecute.object
 
         self.program = Program(self.input.object, self.output.object)
         self.program.addCommand("test", self.command)
@@ -49,38 +51,38 @@ class TestCase(unittest.TestCase):
 
 class CommandLineCommandExecution(TestCase):
     def testCommandWithoutArguments(self):
-        self.commandHandler.expect()
+        self.commandExecute.expect()
         self.program._execute("test")
 
     def testCommandWithArguments(self):
-        self.commandHandler.expect("foo", "bar")
+        self.commandExecute.expect("foo", "bar")
         self.program._execute("test", "foo", "bar")
 
     def testCommandWithOptionWithoutArguments(self):
-        self.commandOptionHandler.expect().andReturn([])
-        self.commandHandler.expect()
+        self.commandOptionActivate.expect().andReturn([])
+        self.commandExecute.expect()
         self.program._execute("test", "--command-option")
 
     def testCommandWithOptionWithArguments(self):
-        self.commandOptionHandler.expect("foo", "bar").andReturn([])
-        self.commandHandler.expect()
+        self.commandOptionActivate.expect("foo", "bar").andReturn([])
+        self.commandExecute.expect()
         self.program._execute("test", "--command-option", "foo", "bar")
 
     def testCommandWithArgumentsWithOptionWithArguments(self):
-        self.commandOptionHandler.expect("foo", "bar", "baz").andReturn(["bar", "baz"])
-        self.commandHandler.expect("bar", "baz")
+        self.commandOptionActivate.expect("foo", "bar", "baz").andReturn(["bar", "baz"])
+        self.commandExecute.expect("bar", "baz")
         self.program._execute("test", "--command-option", "foo", "bar", "baz")
 
 
 class CommandLineProgramOptions(TestCase):
     def testOptionWithoutArguments(self):
-        self.programOptionHandler.expect("test").andReturn(["test"])
-        self.commandHandler.expect()
+        self.programOptionActivate.expect("test").andReturn(["test"])
+        self.commandExecute.expect()
         self.program._execute("--program-option", "test")
 
     def testOptionWithArguments(self):
-        self.programOptionHandler.expect("foo", "test").andReturn(["test"])
-        self.commandHandler.expect()
+        self.programOptionActivate.expect("foo", "test").andReturn(["test"])
+        self.commandExecute.expect()
         self.program._execute("--program-option", "foo", "test")
 
 
@@ -97,13 +99,38 @@ class InteractiveCommandExecution(TestCase):
 
     def testCommandWithArguments(self):
         self.expectInviteAndReturn("test foo bar")
-        self.commandHandler.expect("foo", "bar")
+        self.commandExecute.expect("foo", "bar")
         self.expectInviteAndExit()
         self.program._execute()
 
     def testCommandWithOption(self):
         self.expectInviteAndReturn("test --command-option")
-        self.commandOptionHandler.expect().andReturn([])
-        self.commandHandler.expect()
+        self.commandOptionActivate.expect().andReturn([])
+        self.commandExecute.expect()
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testProgramOptionWithoutArgument(self):
+        self.expectInviteAndReturn("+program-option")
+        self.programOptionActivate.expect().andReturn([])
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testProgramOptionWithArguments(self):
+        self.expectInviteAndReturn("+program-option foo bar")
+        self.programOptionActivate.expect("foo", "bar").andReturn([])
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testProgramOptionThenCommand(self):
+        self.expectInviteAndReturn("+program-option test")
+        self.programOptionActivate.expect("test").andReturn(["test"])
+        self.commandExecute.expect()
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testProgramOptionDeactivation(self):
+        self.expectInviteAndReturn("-program-option")
+        self.programOptionDeactivate.expect().andReturn([])
         self.expectInviteAndExit()
         self.program._execute()

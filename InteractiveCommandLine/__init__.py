@@ -19,10 +19,8 @@ import shlex
 
 class Option:
     def __init__(self):
+        # Keep this method, even if empty, for derived classes to be able to call it
         pass
-
-    def consumeArguments(self, arguments):
-        return self.handle(*arguments)
 
 
 class OptionContainer:
@@ -32,23 +30,28 @@ class OptionContainer:
     def addOption(self, name, option):
         self.__options[name] = option
 
-    def consumeOptions(self, arguments):
+    def consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate = None):
         goOn = True
         while goOn and len(arguments) > 0:
             goOn = False
             argument = arguments[0]
-            if argument.startswith("--"):
-                optionName = argument[2:]
+            if argument.startswith(prefixForActivate):
+                optionName = argument[len(prefixForActivate):]
                 if optionName in self.__options:
-                    arguments = self.__options[optionName].consumeArguments(arguments[1:])
+                    arguments = self.__options[optionName].activate(*(arguments[1:]))
+                    goOn = True
+            elif prefixForDeactivate is not None and argument.startswith(prefixForDeactivate):
+                optionName = argument[len(prefixForDeactivate):]
+                if optionName in self.__options:
+                    arguments = self.__options[optionName].deactivate(*(arguments[1:]))
                     goOn = True
         return arguments
 
 
 class Command(OptionContainer):
-    def execute(self, arguments):
-        arguments = self.consumeOptions(arguments)
-        self.handle(*arguments)
+    def _execute(self, arguments):
+        arguments = self.consumeOptions(arguments, "--")
+        self.execute(*arguments)
 
 
 class CommandContainer:
@@ -57,7 +60,7 @@ class CommandContainer:
 
     def executeCommand(self, arguments):
         command = self.__commands[arguments[0]]
-        command.execute(arguments[1:])
+        command._execute(arguments[1:])
 
     def addCommand(self, name, command):
         self.__commands[name] = command
@@ -71,7 +74,7 @@ class Program(CommandContainer, OptionContainer):
         self.__output = output
 
     def _execute(self, *arguments):
-        arguments = self.consumeOptions(arguments)
+        arguments = self.consumeOptions(arguments, "--")
         if len(arguments) > 0:
             self.executeCommand(arguments)
         else:
@@ -84,6 +87,7 @@ class Program(CommandContainer, OptionContainer):
             if line == "":
                 break
             arguments = shlex.split(line)
+            arguments = self.consumeOptions(arguments, "+", "-")
             if len(arguments) > 0:
                 self.executeCommand(arguments)
 
