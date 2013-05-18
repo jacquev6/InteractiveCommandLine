@@ -23,14 +23,21 @@ function publish {
 }
 
 function check {
-    pep8 --ignore=E501 InteractiveCommandLine setup.py || exit
+    pep8 --ignore=E501 InteractiveCommandLine *.py || exit
+}
+
+function test2 {
+    coverage run --branch --include=InteractiveCommandLine/*.py --omit=InteractiveCommandLine/tests/*.py setup.py test --quiet || exit
+    coverage report --show-missing || exit
+}
+
+function test3 {
+    python3 setup.py test --quiet || exit
 }
 
 function test {
-    python3 setup.py test --quiet || exit
-
-    coverage run --branch --include=InteractiveCommandLine/*.py --omit=InteractiveCommandLine/tests/*.py setup.py test --quiet || exit
-    coverage report --show-missing || exit
+    test3
+    test2
 }
 
 function bump {
