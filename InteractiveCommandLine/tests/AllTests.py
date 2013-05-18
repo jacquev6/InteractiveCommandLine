@@ -134,3 +134,10 @@ class InteractiveCommandExecution(TestCase):
         self.programOptionDeactivate.expect().andReturn([])
         self.expectInviteAndExit()
         self.program._execute()
+
+    def testCommandLineProgramOptionThenCommand(self):
+        self.programOptionActivate.expect().andReturn([])
+        self.expectInviteAndReturn("test")
+        self.commandExecute.expect()
+        self.expectInviteAndExit()
+        self.program._execute("--program-option")
