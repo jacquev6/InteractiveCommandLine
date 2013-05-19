@@ -68,4 +68,4 @@ class NonDeactivateableStoringOption(unittest.TestCase):
     def testDeactivateRaises(self):
         with self.assertRaises(Exception) as cm:
             self.__option.deactivate()
-        self.assertEqual(cm.exception.message, "Option 'name' cannot be deactivated")
+        self.assertEqual(str(cm.exception), "Option 'name' cannot be deactivated")
