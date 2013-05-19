@@ -43,7 +43,7 @@ class AutoHelp(unittest.TestCase):
     def tearDown(self):
         self.mocks.tearDown()
 
-    def testCommandLineHelp(self):
+    def testCommandLineProgramHelp(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
           Command-line mode: example [global-options] command [options]
@@ -58,3 +58,18 @@ class AutoHelp(unittest.TestCase):
           test  A test command
         """))
         self.program._execute("help")
+
+    def testCommandLineCommandHelp(self):
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode: example [global-options] test [options]
+          Interactive mode: test [options]
+
+        Global options:
+          --program-option  A program option
+          --storing-option  A storing option
+
+        Options:
+          --command-option  A command option
+        """))
+        self.program._execute("help", "test")
