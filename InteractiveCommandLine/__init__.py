@@ -13,8 +13,12 @@
 
 # You should have received a copy of the GNU Lesser General Public License along with InteractiveCommandLine.  If not, see <http://www.gnu.org/licenses/>.
 
+# Standard library
 import sys
 import shlex
+
+# Third party libraries
+import recdoc as rd
 
 
 class Option:
@@ -57,6 +61,13 @@ class OptionContainer:
 
         return arguments
 
+    def _getHelpForOptions(self):
+        dl = rd.DefinitionList()
+        help = rd.Section("Global options").add(dl)
+        for option in sorted(self.__options.itervalues(), key=lambda o: o.name):
+            dl.add("--" + option.name, "xx")  ### @todo Help text
+        return help
+
 
 class Command(OptionContainer):
     def __init__(self, name):
@@ -83,6 +94,12 @@ class CommandContainer:
     def addCommand(self, command):
         self.__commands[command.name] = command
 
+    def _getHelpForCommands(self):
+        dl = rd.DefinitionList()
+        help = rd.Section("Commands").add(dl)
+        for command in sorted(self.__commands.itervalues(), key=lambda c: c.name):
+            dl.add(command.name, "xx")  ### @todo Help text
+        return help
 
 class Program(CommandContainer, OptionContainer):
     def __init__(self, input=sys.stdin, output=sys.stdout):
@@ -114,15 +131,23 @@ class Program(CommandContainer, OptionContainer):
 
     def addAutoHelp(self, name):
         class Help(Command):
-            def __init__(self, programName, output):
+            def __init__(self, program, programName, output):
                 Command.__init__(self, "help")
+                self.__program = program
                 self.__programName = programName
                 self.__output = output
 
             def execute(self, *args):
-                self.__output.write("Usage: " + self.__programName)
+                doc = rd.Document()
+                doc.add(rd.Section("Usage").add(rd.Paragraph(
+                    "Command-line mode: " + self.__programName + " [global-options] command [options]\n" +
+                    "Interactive mode: " + self.__programName + " [global-options]"
+                )))
+                doc.add(self.__program._getHelpForOptions())
+                doc.add(self.__program._getHelpForCommands())
+                self.__output.write(doc.format())
 
-        self.addCommand(Help(name, self.__output))
+        self.addCommand(Help(self, name, self.__output))
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])

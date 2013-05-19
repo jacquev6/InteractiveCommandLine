@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License along with InteractiveCommandLine.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
+import textwrap
 
 import MockMockMock
 
@@ -41,6 +42,17 @@ class AutoHelp(unittest.TestCase):
     def tearDown(self):
         self.mocks.tearDown()
 
-    def test(self):
-        self.output.expect.write("Usage: example")
+    def testCommandLineHelp(self):
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode: example [global-options] command [options]
+          Interactive mode: example [global-options]
+
+        Global options:
+          --program-option  xx
+
+        Commands:
+          help  xx
+          test  xx
+        """))
         self.program._execute("help")
