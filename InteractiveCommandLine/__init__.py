@@ -36,7 +36,7 @@ class OptionContainer:
     def addOption(self, option):
         self.__options[option.name] = option
 
-    def consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate=None):
+    def _consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate=None):
         goOn = True
         while goOn and len(arguments) > 0:
             goOn = False
@@ -75,7 +75,7 @@ class Command(OptionContainer):
         self.name = name
 
     def _execute(self, arguments):
-        arguments = self.consumeOptions(arguments, "--")
+        arguments = self._consumeOptions(arguments, "--")
         self.execute(*arguments)
 
 
@@ -83,7 +83,7 @@ class CommandContainer:
     def __init__(self):
         self.__commands = dict()
 
-    def executeCommand(self, arguments):
+    def _executeCommand(self, arguments):
         commandName = arguments[0]
         if commandName in self.__commands:
             command = self.__commands[commandName]
@@ -109,13 +109,13 @@ class Program(CommandContainer, OptionContainer):
         self.__output = output
 
     def _execute(self, *arguments):
-        arguments = self.consumeOptions(arguments, "--")
+        arguments = self._consumeOptions(arguments, "--")
         if len(arguments) > 0:
-            self.executeCommand(arguments)
+            self._executeCommand(arguments)
         else:
-            self.startShell()
+            self._startShell()
 
-    def startShell(self):
+    def _startShell(self):
         while True:
             try:
                 self.__output.write(">")  # @todo Do not display the ">" when we receive our commands from a pipe
@@ -123,9 +123,9 @@ class Program(CommandContainer, OptionContainer):
                 if line == "":
                     break
                 arguments = shlex.split(line)
-                arguments = self.consumeOptions(arguments, "+", "-")
+                arguments = self._consumeOptions(arguments, "+", "-")
                 if len(arguments) > 0:
-                    self.executeCommand(arguments)
+                    self._executeCommand(arguments)
             except Exception as e:
                 self.__output.write("ERROR: " + str(e))
 
