@@ -102,11 +102,13 @@ class CommandContainer:
         return help
 
 class Program(CommandContainer, OptionContainer):
-    def __init__(self, input=sys.stdin, output=sys.stdout):
+    def __init__(self, name, input=sys.stdin, output=sys.stdout):
         CommandContainer.__init__(self)
         OptionContainer.__init__(self)
+        self.name = name
         self.__input = input
         self.__output = output
+        self.__addAutoHelp()
 
     def _execute(self, *arguments):
         arguments = self._consumeOptions(arguments, "--")
@@ -129,25 +131,24 @@ class Program(CommandContainer, OptionContainer):
             except Exception as e:
                 self.__output.write("ERROR: " + str(e))
 
-    def addAutoHelp(self, name):
+    def __addAutoHelp(self):
         class Help(Command):
-            def __init__(self, program, programName, output):
+            def __init__(self, program, output):
                 Command.__init__(self, "help")
                 self.__program = program
-                self.__programName = programName
                 self.__output = output
 
             def execute(self, *args):
                 doc = rd.Document()
                 doc.add(rd.Section("Usage").add(rd.Paragraph(
-                    "Command-line mode: " + self.__programName + " [global-options] command [options]\n" +
-                    "Interactive mode: " + self.__programName + " [global-options]"
+                    "Command-line mode: " + self.__program.name + " [global-options] command [options]\n" +
+                    "Interactive mode: " + self.__program.name + " [global-options]"
                 )))
                 doc.add(self.__program._getHelpForOptions())
                 doc.add(self.__program._getHelpForCommands())
                 self.__output.write(doc.format())
 
-        self.addCommand(Help(self, name, self.__output))
+        self.addCommand(Help(self, self.__output))
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])

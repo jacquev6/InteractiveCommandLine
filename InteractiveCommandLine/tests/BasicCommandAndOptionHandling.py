@@ -41,7 +41,7 @@ class TestCase(unittest.TestCase):
         self.commandExecute = self.mocks.create("commandExecute")
         self.command.execute = self.commandExecute.object
 
-        self.program = Program(self.input.object, self.output.object)
+        self.program = Program("program", self.input.object, self.output.object)
         self.program.addCommand(self.command)
         self.program.addOption(self.programOption)
 

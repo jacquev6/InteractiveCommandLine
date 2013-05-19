@@ -34,8 +34,7 @@ class AutoHelp(unittest.TestCase):
         self.command = Command("test")
         self.command.addOption(self.commandOption)
 
-        self.program = Program(self.input.object, self.output.object)
-        self.program.addAutoHelp("example")
+        self.program = Program("example", self.input.object, self.output.object)
         self.program.addCommand(self.command)
         self.program.addOption(self.programOption)
 

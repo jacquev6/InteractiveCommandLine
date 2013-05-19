@@ -16,9 +16,8 @@ class Printer:
 
 class ExampleProgram(ICL.Program):
     def __init__(self):
-        ICL.Program.__init__(self)
+        ICL.Program.__init__(self, "example")
         self.__printer = Printer()
-        self.addAutoHelp("example")
         self.addCommand(self.Echo(self.__printer))
         self.addOption(ICL.StoringOption("verbose", self.__printer, "verbose", True, False))
 
