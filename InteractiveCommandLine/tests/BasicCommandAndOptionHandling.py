@@ -151,3 +151,29 @@ class InteractiveCommandExecution(TestCase):
         self.commandExecute.expect()
         self.expectInviteAndExit()
         self.program._execute("--program-option")
+
+    def testUnknownCommand(self):
+        self.expectInviteAndReturn("unknown")
+        self.output.expect.write("ERROR: Unknown command 'unknown'")
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testExceptionDuringCommand(self):
+        self.expectInviteAndReturn("test")
+        self.commandExecute.expect().andRaise(Exception("Command went bad"))
+        self.output.expect.write("ERROR: Command went bad")
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testUnknownOption(self):
+        self.expectInviteAndReturn("+unknown")
+        self.output.expect.write("ERROR: Unknown option 'unknown'")
+        self.expectInviteAndExit()
+        self.program._execute()
+
+    def testExceptionDuringOptionActivation(self):
+        self.expectInviteAndReturn("+program-option")
+        self.programOptionActivate.expect().andRaise(Exception("Activation went bad"))
+        self.output.expect.write("ERROR: Activation went bad")
+        self.expectInviteAndExit()
+        self.program._execute()

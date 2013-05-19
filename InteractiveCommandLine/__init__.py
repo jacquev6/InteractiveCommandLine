@@ -100,14 +100,17 @@ class Program(CommandContainer, OptionContainer):
 
     def startShell(self):
         while True:
-            self.__output.write(">")  # @todo Do not display the ">" when we receive our commands from a pipe
-            line = self.__input.readline()
-            if line == "":
-                break
-            arguments = shlex.split(line)
-            arguments = self.consumeOptions(arguments, "+", "-")
-            if len(arguments) > 0:
-                self.executeCommand(arguments)
+            try:
+                self.__output.write(">")  # @todo Do not display the ">" when we receive our commands from a pipe
+                line = self.__input.readline()
+                if line == "":
+                    break
+                arguments = shlex.split(line)
+                arguments = self.consumeOptions(arguments, "+", "-")
+                if len(arguments) > 0:
+                    self.executeCommand(arguments)
+            except Exception as e:
+                self.__output.write("ERROR: " + str(e))
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
