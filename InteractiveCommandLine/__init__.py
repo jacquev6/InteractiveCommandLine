@@ -37,16 +37,24 @@ class OptionContainer:
         while goOn and len(arguments) > 0:
             goOn = False
             argument = arguments[0]
+
+            optionName = None
             if argument.startswith(prefixForActivate):
                 optionName = argument[len(prefixForActivate):]
-                if optionName in self.__options:
-                    arguments = self.__options[optionName].activate(*(arguments[1:]))
-                    goOn = True
+                mustActivate = True
             elif prefixForDeactivate is not None and argument.startswith(prefixForDeactivate):
                 optionName = argument[len(prefixForDeactivate):]
+                mustActivate = False
+
+            if optionName is not None:
                 if optionName in self.__options:
-                    arguments = self.__options[optionName].deactivate(*(arguments[1:]))
+                    option = self.__options[optionName]
+                    operation = option.activate if mustActivate else option.deactivate
+                    arguments = operation(*(arguments[1:]))
                     goOn = True
+                else:
+                    raise Exception("Unknown option '" + optionName + "'")
+
         return arguments
 
 
@@ -65,8 +73,12 @@ class CommandContainer:
         self.__commands = dict()
 
     def executeCommand(self, arguments):
-        command = self.__commands[arguments[0]]
-        command._execute(arguments[1:])
+        commandName = arguments[0]
+        if commandName in self.__commands:
+            command = self.__commands[commandName]
+            command._execute(arguments[1:])
+        else:
+            raise Exception("Unknown command '" + commandName + "'")
 
     def addCommand(self, command):
         self.__commands[command.name] = command

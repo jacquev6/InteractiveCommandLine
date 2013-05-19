@@ -73,6 +73,11 @@ class CommandLineCommandExecution(TestCase):
         self.commandExecute.expect("bar", "baz")
         self.program._execute("test", "--command-option", "foo", "bar", "baz")
 
+    def testUnknownCommand(self):
+        with self.assertRaises(Exception) as cm:
+            self.program._execute("unknown")
+        self.assertEqual(cm.exception.args[0], "Unknown command 'unknown'")
+
 
 class CommandLineProgramOptions(TestCase):
     def testOptionWithoutArguments(self):
@@ -84,6 +89,11 @@ class CommandLineProgramOptions(TestCase):
         self.programOptionActivate.expect("foo", "test").andReturn(["test"])
         self.commandExecute.expect()
         self.program._execute("--program-option", "foo", "test")
+
+    def testUnknownOption(self):
+        with self.assertRaises(Exception) as cm:
+            self.program._execute("--unknown-option", "foo", "test")
+        self.assertEqual(cm.exception.args[0], "Unknown option 'unknown-option'")
 
 
 class InteractiveCommandExecution(TestCase):
