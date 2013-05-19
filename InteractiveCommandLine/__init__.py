@@ -69,6 +69,9 @@ class OptionContainer:
             dl.add("--" + option.name, option.shortHelp)
         return help
 
+    def _hasOptions(self):
+        return len(self.__options) != 0
+
 
 class Command(OptionContainer):
     def __init__(self, name, shortHelp):
@@ -85,13 +88,14 @@ class CommandContainer:
     def __init__(self):
         self.__commands = dict()
 
-    def _executeCommand(self, arguments):
-        commandName = arguments[0]
+    def __getCommand(self, commandName):
         if commandName in self.__commands:
-            command = self.__commands[commandName]
-            command._execute(arguments[1:])
+            return self.__commands[commandName]
         else:
             raise Exception("Unknown command '" + commandName + "'")
+
+    def _executeCommand(self, arguments):
+        self.__getCommand(arguments[0])._execute(arguments[1:])
 
     def addCommand(self, command):
         self.__commands[command.name] = command
@@ -104,7 +108,17 @@ class CommandContainer:
         return help
 
     def _getHelpForCommandOptions(self, commandName):
-        return self.__commands[commandName]._getHelpForOptions("Options")
+        command = self.__getCommand(commandName)
+        if command._hasOptions():
+            return command._getHelpForOptions("Options")
+        else:
+            return rd.Paragraph("No command options")
+
+    def _getCommandUsage(self, commandName):
+        usage = commandName
+        if self.__getCommand(commandName)._hasOptions():
+            usage += " [options]"
+        return usage
 
 class Program(CommandContainer, OptionContainer):
     def __init__(self, name, input=sys.stdin, output=sys.stdout):
@@ -152,9 +166,10 @@ class Program(CommandContainer, OptionContainer):
 
             def __getHelpForProgram(self):
                 doc = rd.Document()
-                doc.add(rd.Section("Usage").add(rd.Paragraph(
-                    "Command-line mode: " + self.__program.name + " [global-options] command [options]\n" +
-                    "Interactive mode: " + self.__program.name + " [global-options]"
+                doc.add(rd.Section("Usage").add(rd.DefinitionList().add(
+                    "Command-line mode:", self.__program.name + " [global-options] command [options]"
+                ).add(
+                    "Interactive mode:", self.__program.name + " [global-options]"
                 )))
                 doc.add(self.__program._getHelpForOptions("Global options"))
                 doc.add(self.__program._getHelpForCommands())
@@ -162,9 +177,11 @@ class Program(CommandContainer, OptionContainer):
 
             def __getHelpForCommand(self, commandName):
                 doc = rd.Document()
-                doc.add(rd.Section("Usage").add(rd.Paragraph(
-                    "Command-line mode: " + self.__program.name + " [global-options] " + commandName + " [options]\n" +
-                    "Interactive mode: " + commandName + " [options]"
+                commandUsage = self.__program._getCommandUsage(commandName)
+                doc.add(rd.Section("Usage").add(rd.DefinitionList().add(
+                    "Command-line mode:", self.__program.name + " [global-options] " + commandUsage
+                ).add(
+                    "Interactive mode:", commandUsage
                 )))
                 doc.add(self.__program._getHelpForOptions("Global options"))
                 doc.add(self.__program._getHelpForCommandOptions(commandName))

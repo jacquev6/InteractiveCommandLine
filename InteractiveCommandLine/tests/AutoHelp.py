@@ -46,8 +46,8 @@ class AutoHelp(unittest.TestCase):
     def testCommandLineProgramHelp(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode: example [global-options] command [options]
-          Interactive mode: example [global-options]
+          Command-line mode:  example [global-options] command [options]
+          Interactive mode:   example [global-options]
 
         Global options:
           --program-option  A program option
@@ -62,8 +62,8 @@ class AutoHelp(unittest.TestCase):
     def testCommandLineCommandHelp(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode: example [global-options] test [options]
-          Interactive mode: test [options]
+          Command-line mode:  example [global-options] test [options]
+          Interactive mode:   test [options]
 
         Global options:
           --program-option  A program option
@@ -73,3 +73,17 @@ class AutoHelp(unittest.TestCase):
           --command-option  A command option
         """))
         self.program._execute("help", "test")
+
+    def testCommandLineCommandHelp2(self):
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode:  example [global-options] help
+          Interactive mode:   help
+
+        Global options:
+          --program-option  A program option
+          --storing-option  A storing option
+
+        No command options
+        """))
+        self.program._execute("help", "help")
