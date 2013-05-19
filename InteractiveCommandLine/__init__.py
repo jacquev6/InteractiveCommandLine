@@ -18,17 +18,16 @@ import shlex
 
 
 class Option:
-    def __init__(self):
-        # Keep this method, even if empty, for derived classes to be able to call it
-        pass
+    def __init__(self, name):
+        self.name = name
 
 
 class OptionContainer:
     def __init__(self):
         self.__options = dict()
 
-    def addOption(self, name, option):
-        self.__options[name] = option
+    def addOption(self, option):
+        self.__options[option.name] = option
 
     def consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate = None):
         goOn = True
@@ -49,6 +48,10 @@ class OptionContainer:
 
 
 class Command(OptionContainer):
+    def __init__(self, name):
+        OptionContainer.__init__(self)
+        self.name = name
+
     def _execute(self, arguments):
         arguments = self.consumeOptions(arguments, "--")
         self.execute(*arguments)
@@ -62,8 +65,8 @@ class CommandContainer:
         command = self.__commands[arguments[0]]
         command._execute(arguments[1:])
 
-    def addCommand(self, name, command):
-        self.__commands[name] = command
+    def addCommand(self, command):
+        self.__commands[command.name] = command
 
 
 class Program(CommandContainer, OptionContainer):
