@@ -19,6 +19,7 @@ import MockMockMock
 
 from InteractiveCommandLine import StoringOption
 
+
 class DeactivateableStoringOption(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
@@ -48,6 +49,7 @@ class DeactivateableStoringOption(unittest.TestCase):
     def testDeactivate(self):
         self.__option.deactivate()
         self.assertIs(self.__container.attribute, self.__deactivationValue)
+
 
 class NonDeactivateableStoringOption(unittest.TestCase):
     def setUp(self):

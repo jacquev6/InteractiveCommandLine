@@ -32,7 +32,7 @@ class OptionContainer:
     def addOption(self, option):
         self.__options[option.name] = option
 
-    def consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate = None):
+    def consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate=None):
         goOn = True
         while goOn and len(arguments) > 0:
             goOn = False
@@ -115,10 +115,11 @@ class Program(CommandContainer, OptionContainer):
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
 
+
 class StoringOption(Option):
     __noDeactivationValue = (None,)
 
-    def __init__(self, name, container, attribute, activationValue, deactivationValue = __noDeactivationValue):
+    def __init__(self, name, container, attribute, activationValue, deactivationValue=__noDeactivationValue):
         Option.__init__(self, name)
         self.__container = container
         self.__attribute = attribute
