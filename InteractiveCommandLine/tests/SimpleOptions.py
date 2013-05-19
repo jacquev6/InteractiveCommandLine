@@ -31,7 +31,7 @@ class DeactivateableStoringOption(unittest.TestCase):
         self.__container = Container()
         self.__activationValue = (42,)
         self.__deactivationValue = (56,)
-        self.__option = StoringOption("name", self.__container, "attribute", self.__activationValue, self.__deactivationValue)
+        self.__option = StoringOption("name", "short help", self.__container, "attribute", self.__activationValue, self.__deactivationValue)
 
     def testCOnstructionDoesNotTouchContainer(self):
         self.assertIsNone(self.__container.attribute)
@@ -61,7 +61,7 @@ class NonDeactivateableStoringOption(unittest.TestCase):
 
         self.__container = Container()
         self.__activationValue = (42,)
-        self.__option = StoringOption("name", self.__container, "attribute", self.__activationValue)
+        self.__option = StoringOption("name", "short help", self.__container, "attribute", self.__activationValue)
 
     def testActivateActivates(self):
         self.__option.activate()

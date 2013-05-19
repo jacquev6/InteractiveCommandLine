@@ -19,13 +19,13 @@ class ExampleProgram(ICL.Program):
         ICL.Program.__init__(self, "example")
         self.__printer = Printer()
         self.addCommand(self.Echo(self.__printer))
-        self.addOption(ICL.StoringOption("verbose", self.__printer, "verbose", True, False))
+        self.addOption(ICL.StoringOption("verbose", "Print more information", self.__printer, "verbose", True, False))
 
     class Echo(ICL.Command):
         def __init__(self, printer):
-            ICL.Command.__init__(self, "echo")
+            ICL.Command.__init__(self, "echo", "Print a message")
             self.__printer = printer
-            self.addOption(ICL.StoringOption("upper", printer, "upper", True))
+            self.addOption(ICL.StoringOption("upper", "Print in upper case", printer, "upper", True))
 
         def execute(self, *text):
             self.__printer.do(" ".join(text))

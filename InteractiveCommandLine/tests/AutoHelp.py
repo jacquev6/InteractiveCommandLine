@@ -18,7 +18,7 @@ import textwrap
 
 import MockMockMock
 
-from InteractiveCommandLine import Program, Command, Option
+from InteractiveCommandLine import Program, Command, Option, StoringOption
 
 
 class AutoHelp(unittest.TestCase):
@@ -27,16 +27,18 @@ class AutoHelp(unittest.TestCase):
         self.input = self.mocks.create("input")
         self.output = self.mocks.create("output")
 
-        self.commandOption = Option("command-option")
+        self.commandOption = Option("command-option", "A command option")
 
-        self.programOption = Option("program-option")
+        self.programOption = Option("program-option", "A program option")
+        self.storingOption = StoringOption("storing-option", "A storing option", None, None, True, False)
 
-        self.command = Command("test")
+        self.command = Command("test", "A test command")
         self.command.addOption(self.commandOption)
 
         self.program = Program("example", self.input.object, self.output.object)
         self.program.addCommand(self.command)
         self.program.addOption(self.programOption)
+        self.program.addOption(self.storingOption)
 
     def tearDown(self):
         self.mocks.tearDown()
@@ -48,10 +50,11 @@ class AutoHelp(unittest.TestCase):
           Interactive mode: example [global-options]
 
         Global options:
-          --program-option  xx
+          --program-option  A program option
+          --storing-option  A storing option
 
         Commands:
-          help  xx
-          test  xx
+          help  Display this help message
+          test  A test command
         """))
         self.program._execute("help")

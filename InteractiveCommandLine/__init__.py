@@ -22,8 +22,9 @@ import recdoc as rd
 
 
 class Option:
-    def __init__(self, name):
+    def __init__(self, name, shortHelp):
         self.name = name
+        self.shortHelp = shortHelp
 
     def deactivate(self, *args):
         raise Exception("Option '" + self.name + "' cannot be deactivated")
@@ -65,14 +66,15 @@ class OptionContainer:
         dl = rd.DefinitionList()
         help = rd.Section("Global options").add(dl)
         for option in sorted(self.__options.itervalues(), key=lambda o: o.name):
-            dl.add("--" + option.name, "xx")  ### @todo Help text
+            dl.add("--" + option.name, option.shortHelp)
         return help
 
 
 class Command(OptionContainer):
-    def __init__(self, name):
+    def __init__(self, name, shortHelp):
         OptionContainer.__init__(self)
         self.name = name
+        self.shortHelp = shortHelp
 
     def _execute(self, arguments):
         arguments = self._consumeOptions(arguments, "--")
@@ -98,7 +100,7 @@ class CommandContainer:
         dl = rd.DefinitionList()
         help = rd.Section("Commands").add(dl)
         for command in sorted(self.__commands.itervalues(), key=lambda c: c.name):
-            dl.add(command.name, "xx")  ### @todo Help text
+            dl.add(command.name, command.shortHelp)  ### @todo Help text
         return help
 
 class Program(CommandContainer, OptionContainer):
@@ -134,7 +136,7 @@ class Program(CommandContainer, OptionContainer):
     def __addAutoHelp(self):
         class Help(Command):
             def __init__(self, program, output):
-                Command.__init__(self, "help")
+                Command.__init__(self, "help", "Display this help message")
                 self.__program = program
                 self.__output = output
 
@@ -157,8 +159,8 @@ class Program(CommandContainer, OptionContainer):
 class StoringOption(Option):
     __noDeactivationValue = (None,)
 
-    def __init__(self, name, container, attribute, activationValue, deactivationValue=__noDeactivationValue):
-        Option.__init__(self, name)
+    def __init__(self, name, shortHelp, container, attribute, activationValue, deactivationValue=__noDeactivationValue):
+        Option.__init__(self, name, shortHelp)
         self.__container = container
         self.__attribute = attribute
         self.__activationValue = activationValue

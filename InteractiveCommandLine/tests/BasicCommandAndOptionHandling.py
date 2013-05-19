@@ -26,17 +26,17 @@ class TestCase(unittest.TestCase):
         self.input = self.mocks.create("input")
         self.output = self.mocks.create("output")
 
-        self.commandOption = Option("command-option")
+        self.commandOption = Option("command-option", "A command option")
         self.commandOptionActivate = self.mocks.create("commandOptionActivate")
         self.commandOption.activate = self.commandOptionActivate.object
 
-        self.programOption = Option("program-option")
+        self.programOption = Option("program-option", "A program option")
         self.programOptionActivate = self.mocks.create("programOptionActivate")
         self.programOption.activate = self.programOptionActivate.object
         self.programOptionDeactivate = self.mocks.create("programOptionDeactivate")
         self.programOption.deactivate = self.programOptionDeactivate.object
 
-        self.command = Command("test")
+        self.command = Command("test", "A test command")
         self.command.addOption(self.commandOption)
         self.commandExecute = self.mocks.create("commandExecute")
         self.command.execute = self.commandExecute.object
