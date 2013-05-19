@@ -120,13 +120,15 @@ class CommandContainer:
             usage += " [options]"
         return usage
 
+
 class Program(CommandContainer, OptionContainer):
-    def __init__(self, name, input=sys.stdin, output=sys.stdout):
+    def __init__(self, name, input=sys.stdin, output=sys.stdout, invite=">"):
         CommandContainer.__init__(self)
         OptionContainer.__init__(self)
         self.name = name
         self.__input = input
         self.__output = output
+        self.__invite = invite
         self.__addAutoHelp()
 
     def _execute(self, *arguments):
@@ -139,7 +141,7 @@ class Program(CommandContainer, OptionContainer):
     def _startShell(self):
         while True:
             try:
-                self.__output.write(">")  # @todo Do not display the ">" when we receive our commands from a pipe
+                self.__output.write(self.__invite)  # @todo Do not display the ">" when we receive our commands from a pipe
                 line = self.__input.readline()
                 if line == "":
                     break

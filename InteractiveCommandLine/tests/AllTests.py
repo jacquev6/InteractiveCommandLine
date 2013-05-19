@@ -16,3 +16,4 @@
 from BasicCommandAndOptionHandling import *
 from SimpleOptions import *
 from AutoHelp import *
+from Misc import *
