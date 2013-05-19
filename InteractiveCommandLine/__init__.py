@@ -112,6 +112,18 @@ class Program(CommandContainer, OptionContainer):
             except Exception as e:
                 self.__output.write("ERROR: " + str(e))
 
+    def addAutoHelp(self, name):
+        class Help(Command):
+            def __init__(self, programName, output):
+                Command.__init__(self, "help")
+                self.__programName = programName
+                self.__output = output
+
+            def execute(self, *args):
+                self.__output.write("Usage: " + self.__programName)
+
+        self.addCommand(Help(name, self.__output))
+
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
 

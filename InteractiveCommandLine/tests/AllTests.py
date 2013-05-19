@@ -15,3 +15,4 @@
 
 from BasicCommandAndOptionHandling import *
 from SimpleOptions import *
+from AutoHelp import *
