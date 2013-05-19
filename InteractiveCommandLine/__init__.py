@@ -20,6 +20,9 @@ import shlex
 # Third party libraries
 import recdoc as rd
 
+### @todo Option groups
+### @todo Command groups
+
 
 class Option:
     def __init__(self, name, shortHelp):
