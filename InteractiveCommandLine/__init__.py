@@ -21,6 +21,9 @@ class Option:
     def __init__(self, name):
         self.name = name
 
+    def deactivate(self, *args):
+        raise Exception("Option '" + self.name + "' cannot be deactivated")
+
 
 class OptionContainer:
     def __init__(self):
@@ -96,3 +99,24 @@ class Program(CommandContainer, OptionContainer):
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
+
+class StoringOption(Option):
+    __noDeactivationValue = (None,)
+
+    def __init__(self, name, container, attribute, activationValue, deactivationValue = __noDeactivationValue):
+        Option.__init__(self, name)
+        self.__container = container
+        self.__attribute = attribute
+        self.__activationValue = activationValue
+        self.__deactivationValue = deactivationValue
+
+    def activate(self, *args):
+        setattr(self.__container, self.__attribute, self.__activationValue)
+        return args
+
+    def deactivate(self, *args):
+        if self.__deactivationValue is self.__noDeactivationValue:
+            return Option.deactivate(self, *args)
+        else:
+            setattr(self.__container, self.__attribute, self.__deactivationValue)
+            return args
