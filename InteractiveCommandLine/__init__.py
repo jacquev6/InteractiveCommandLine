@@ -89,11 +89,14 @@ class Command(OptionContainer):
 
 class CommandContainer:
     def __init__(self):
-        self.__commands = dict()
+        self.__allCommands = dict()
+        self.__container = None
+        self.__groups = list()
+        self.__freeCommands = list()
 
     def __getCommand(self, commandName):
-        if commandName in self.__commands:
-            return self.__commands[commandName]
+        if commandName in self.__allCommands:
+            return self.__allCommands[commandName]
         else:
             raise Exception("Unknown command '" + commandName + "'")
 
@@ -101,13 +104,29 @@ class CommandContainer:
         self.__getCommand(arguments[0])._execute(arguments[1:])
 
     def addCommand(self, command):
-        self.__commands[command.name] = command
+        self.__freeCommands.append(command)
+        self.__topLevelContainer().__allCommands[command.name] = command
 
-    def _getHelpForCommands(self):
+    def addCommandGroup(self, group):
+        self.__groups.append(group)
+        group.__container = self
+        self.__topLevelContainer().__allCommands.update(group.__allCommands)
+
+    def __topLevelContainer(self):
+        topLevelContainer = self
+        while topLevelContainer.__container is not None:
+            topLevelContainer = topLevelContainer.__container
+        return topLevelContainer
+
+    def _getHelpForCommands(self, title="Commands"):
         dl = rd.DefinitionList()
-        help = rd.Section("Commands").add(dl)
-        for command in sorted(self.__commands.itervalues(), key=lambda c: c.name):
-            dl.add(command.name, command.shortHelp)
+        help = rd.Section(title)
+        if len(self.__freeCommands) != 0:
+            help.add(dl)
+            for command in sorted(self.__freeCommands, key=lambda c: c.name):
+                dl.add(command.name, command.shortHelp)
+        for group in sorted(self.__groups, key=lambda c: c.name):
+            help.add(group._getHelpForCommands(group.name))
         return help
 
     def _getHelpForCommandOptions(self, commandName):
@@ -122,6 +141,12 @@ class CommandContainer:
         if self.__getCommand(commandName)._hasOptions():
             usage += " [options]"
         return usage
+
+
+class CommandGroup(CommandContainer):
+    def __init__(self, name):
+        CommandContainer.__init__(self)
+        self.name = name
 
 
 class Program(CommandContainer, OptionContainer):
