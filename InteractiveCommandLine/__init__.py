@@ -107,7 +107,12 @@ class CommandContainer:
         self.__freeCommands.append(command)
         self.__topLevelContainer().__allCommands[command.name] = command
 
-    def addCommandGroup(self, group):
+    def createCommandGroup(self, name):
+        group = CommandGroup(name)
+        self.__addCommandGroup(group)
+        return group
+
+    def __addCommandGroup(self, group):
         self.__groups.append(group)
         group.__container = self
         self.__topLevelContainer().__allCommands.update(group.__allCommands)

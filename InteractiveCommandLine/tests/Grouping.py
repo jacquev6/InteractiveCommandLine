@@ -39,8 +39,7 @@ class Grouping(unittest.TestCase):
         self.mocks.tearDown()
 
     def testDoc(self):
-        g = CommandGroup("Command group")
-        self.p.addCommandGroup(g)
+        g = self.p.createCommandGroup("Command group")
         g.addCommand(self.command)
 
         self.output.expect.write(textwrap.dedent("""\
@@ -59,18 +58,8 @@ class Grouping(unittest.TestCase):
 
         self.p._execute("help")
 
-    def testExecuteWithAddGroupAfterAddCommand(self):
-        g = CommandGroup("Command group")
-        g.addCommand(self.command)
-        self.p.addCommandGroup(g)
-
-        self.commandExecute.expect()
-
-        self.p._execute("command")
-
-    def testExecuteWithAddCommandAfterAddGroup(self):
-        g = CommandGroup("Command group")
-        self.p.addCommandGroup(g)
+    def testExecute(self):
+        g = self.p.createCommandGroup("Command group")
         g.addCommand(self.command)
 
         self.commandExecute.expect()
@@ -78,26 +67,20 @@ class Grouping(unittest.TestCase):
         self.p._execute("command")
 
     def testExecuteWithRecursiveGroups(self):
-        g1 = CommandGroup("Command group 1")
-        g2 = CommandGroup("Command group 2")
-        g1.addCommandGroup(g2)
-        g3 = CommandGroup("Command group 3")
-        self.p.addCommandGroup(g1)
+        g1 = self.p.createCommandGroup("Command group 1")
+        g2 = g1.createCommandGroup("Command group 2")
+        g3 = g2.createCommandGroup("Command group 3")
         g3.addCommand(self.command)
-        g2.addCommandGroup(g3)
 
         self.commandExecute.expect()
 
         self.p._execute("command")
 
     def testDocWithRecursiveGroups(self):
-        g1 = CommandGroup("Command group 1")
-        g2 = CommandGroup("Command group 2")
-        g1.addCommandGroup(g2)
-        g3 = CommandGroup("Command group 3")
-        self.p.addCommandGroup(g1)
+        g1 = self.p.createCommandGroup("Command group 1")
+        g2 = g1.createCommandGroup("Command group 2")
+        g3 = g2.createCommandGroup("Command group 3")
         g3.addCommand(self.command)
-        g2.addCommandGroup(g3)
 
         self.output.expect.write(textwrap.dedent("""\
         Usage:
