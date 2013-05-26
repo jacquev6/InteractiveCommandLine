@@ -18,7 +18,7 @@ import textwrap
 
 import MockMockMock
 
-from InteractiveCommandLine import Program, Command, CommandGroup, Option
+from InteractiveCommandLine import Program, Command, Option
 
 
 class Grouping(unittest.TestCase):

@@ -33,7 +33,7 @@ class Option:
         raise Exception("Option '" + self.name + "' cannot be deactivated")
 
 
-class OptionContainer:
+class _OptionContainer:
     def __init__(self):
         self.__options = dict()
 
@@ -76,9 +76,9 @@ class OptionContainer:
         return len(self.__options) != 0
 
 
-class Command(OptionContainer):
+class Command(_OptionContainer):
     def __init__(self, name, shortHelp):
-        OptionContainer.__init__(self)
+        _OptionContainer.__init__(self)
         self.name = name
         self.shortHelp = shortHelp
 
@@ -87,52 +87,50 @@ class Command(OptionContainer):
         self.execute(*arguments)
 
 
-class CommandContainer:
-    def __init__(self):
-        self.__allCommands = dict()
-        self.__container = None
+class _CommandGroup:
+    def __init__(self, container, name):
+        self.__container = container
+        self.__name = name
         self.__groups = list()
-        self.__freeCommands = list()
+        self.__commands = list()
+
+    def createCommandGroup(self, name):
+        group = _CommandGroup(self.__container, name)
+        self.__groups.append(group)
+        return group
+
+    def addCommand(self, command):
+        self.__commands.append(command)
+        self.__container._addCommand(command)
+
+    def _getHelpForCommands(self):
+        help = rd.Section(self.__name)
+        if len(self.__commands) != 0:
+            dl = rd.DefinitionList()
+            help.add(dl)
+            for command in sorted(self.__commands, key=lambda c: c.name):
+                dl.add(command.name, command.shortHelp)
+        for group in sorted(self.__groups, key=lambda c: c.__name):
+            help.add(group._getHelpForCommands())
+        return help
+
+
+class _CommandContainer(_CommandGroup):
+    def __init__(self, name):
+        _CommandGroup.__init__(self, self, name)
+        self.__commands = dict()
+
+    def _addCommand(self, command):
+        self.__commands[command.name] = command
 
     def __getCommand(self, commandName):
-        if commandName in self.__allCommands:
-            return self.__allCommands[commandName]
+        if commandName in self.__commands:
+            return self.__commands[commandName]
         else:
             raise Exception("Unknown command '" + commandName + "'")
 
     def _executeCommand(self, arguments):
         self.__getCommand(arguments[0])._execute(arguments[1:])
-
-    def addCommand(self, command):
-        self.__freeCommands.append(command)
-        self.__topLevelContainer().__allCommands[command.name] = command
-
-    def createCommandGroup(self, name):
-        group = CommandGroup(name)
-        self.__addCommandGroup(group)
-        return group
-
-    def __addCommandGroup(self, group):
-        self.__groups.append(group)
-        group.__container = self
-        self.__topLevelContainer().__allCommands.update(group.__allCommands)
-
-    def __topLevelContainer(self):
-        topLevelContainer = self
-        while topLevelContainer.__container is not None:
-            topLevelContainer = topLevelContainer.__container
-        return topLevelContainer
-
-    def _getHelpForCommands(self, title="Commands"):
-        dl = rd.DefinitionList()
-        help = rd.Section(title)
-        if len(self.__freeCommands) != 0:
-            help.add(dl)
-            for command in sorted(self.__freeCommands, key=lambda c: c.name):
-                dl.add(command.name, command.shortHelp)
-        for group in sorted(self.__groups, key=lambda c: c.name):
-            help.add(group._getHelpForCommands(group.name))
-        return help
 
     def _getHelpForCommandOptions(self, commandName):
         command = self.__getCommand(commandName)
@@ -148,16 +146,10 @@ class CommandContainer:
         return usage
 
 
-class CommandGroup(CommandContainer):
-    def __init__(self, name):
-        CommandContainer.__init__(self)
-        self.name = name
-
-
-class Program(CommandContainer, OptionContainer):
+class Program(_CommandContainer, _OptionContainer):
     def __init__(self, name, input=sys.stdin, output=sys.stdout, invite=">"):
-        CommandContainer.__init__(self)
-        OptionContainer.__init__(self)
+        _CommandContainer.__init__(self, "Commands")
+        _OptionContainer.__init__(self)
         self.name = name
         self.__input = input
         self.__output = output
