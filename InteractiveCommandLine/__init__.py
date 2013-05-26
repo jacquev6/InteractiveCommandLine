@@ -33,11 +33,40 @@ class Option:
         raise Exception("Option '" + self.name + "' cannot be deactivated")
 
 
-class _OptionContainer:
-    def __init__(self):
-        self.__options = dict()
+class _OptionGroup:
+    def __init__(self, container, name):
+        self.__container = container
+        self.__name = name
+        self.__groups = list()
+        self.__options = list()
+
+    def createOptionGroup(self, name):
+        group = _OptionGroup(self.__container, name)
+        self.__groups.append(group)
+        return group
 
     def addOption(self, option):
+        self.__options.append(option)
+        self.__container._addOption(option)
+
+    def _getHelpForOptions(self):
+        help = rd.Section(self.__name)
+        if len(self.__options) != 0:
+            dl = rd.DefinitionList()
+            help.add(dl)
+            for option in sorted(self.__options, key=lambda o: o.name):
+                dl.add("--" + option.name, option.shortHelp)
+        for group in sorted(self.__groups, key=lambda g: g.__name):
+            help.add(group._getHelpForOptions())
+        return help
+
+
+class _OptionContainer(_OptionGroup):
+    def __init__(self, name):
+        _OptionGroup.__init__(self, self, name)
+        self.__options = dict()
+
+    def _addOption(self, option):
         self.__options[option.name] = option
 
     def _consumeOptions(self, arguments, prefixForActivate, prefixForDeactivate=None):
@@ -65,20 +94,13 @@ class _OptionContainer:
 
         return arguments
 
-    def _getHelpForOptions(self, title):
-        dl = rd.DefinitionList()
-        help = rd.Section(title).add(dl)
-        for option in sorted(self.__options.itervalues(), key=lambda o: o.name):
-            dl.add("--" + option.name, option.shortHelp)
-        return help
-
     def _hasOptions(self):
         return len(self.__options) != 0
 
 
 class Command(_OptionContainer):
     def __init__(self, name, shortHelp):
-        _OptionContainer.__init__(self)
+        _OptionContainer.__init__(self, "Options")
         self.name = name
         self.shortHelp = shortHelp
 
@@ -110,7 +132,7 @@ class _CommandGroup:
             help.add(dl)
             for command in sorted(self.__commands, key=lambda c: c.name):
                 dl.add(command.name, command.shortHelp)
-        for group in sorted(self.__groups, key=lambda c: c.__name):
+        for group in sorted(self.__groups, key=lambda g: g.__name):
             help.add(group._getHelpForCommands())
         return help
 
@@ -135,7 +157,7 @@ class _CommandContainer(_CommandGroup):
     def _getHelpForCommandOptions(self, commandName):
         command = self.__getCommand(commandName)
         if command._hasOptions():
-            return command._getHelpForOptions("Options")
+            return command._getHelpForOptions()
         else:
             return rd.Paragraph("No command options")
 
@@ -149,7 +171,7 @@ class _CommandContainer(_CommandGroup):
 class Program(_CommandContainer, _OptionContainer):
     def __init__(self, name, input=sys.stdin, output=sys.stdout, invite=">"):
         _CommandContainer.__init__(self, "Commands")
-        _OptionContainer.__init__(self)
+        _OptionContainer.__init__(self, "Global options")
         self.name = name
         self.__input = input
         self.__output = output
@@ -198,7 +220,7 @@ class Program(_CommandContainer, _OptionContainer):
                 ).add(
                     "Interactive mode:", self.__program.name + " [global-options]"
                 )))
-                doc.add(self.__program._getHelpForOptions("Global options"))
+                doc.add(self.__program._getHelpForOptions())
                 doc.add(self.__program._getHelpForCommands())
                 return doc
 
@@ -210,7 +232,7 @@ class Program(_CommandContainer, _OptionContainer):
                 ).add(
                     "Interactive mode:", commandUsage
                 )))
-                doc.add(self.__program._getHelpForOptions("Global options"))
+                doc.add(self.__program._getHelpForOptions())
                 doc.add(self.__program._getHelpForCommandOptions(commandName))
                 return doc
 
