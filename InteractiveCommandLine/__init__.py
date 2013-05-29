@@ -94,7 +94,7 @@ class _OptionContainer(_OptionGroup):
 
         return arguments
 
-    def _getUsage(self, options):
+    def _getUsageForOptions(self, options):
         usage = self.name
         if len(self.__options) != 0:
             usage += " [" + options + "]"
@@ -113,6 +113,9 @@ class Command(_OptionContainer):
 
     def _getHelpSections(self, args):
         return [self._getHelpForOptions()]
+
+    def _getUsage(self, args):
+        return self._getUsageForOptions(self.name + "-options")
 
 class _CommandGroup:
     def __init__(self, container, name):
@@ -219,20 +222,18 @@ class Program(_CommandContainer, _OptionContainer):
         return doc
 
     def _getCommandLineUsage(self, args):
-        programUsage = self._getUsage("global-options")
+        programUsage = self._getUsageForOptions("global-options")
         if len(args) == 0:
             return programUsage + " command [options]"
         else:
-            commandName = args[0]
-            commandUsage = self._getCommand(commandName)._getUsage(commandName + "-options")
+            commandUsage = self._getCommand(args[0])._getUsage(args[1:])
             return programUsage + " " + commandUsage
 
     def _getInteractiveUsage(self, args):
         if len(args) == 0:
-            return self._getUsage("global-options")
+            return self._getUsageForOptions("global-options")
         else:
-            commandName = args[0]
-            return self._getCommand(commandName)._getUsage(commandName + "-options")
+            return self._getCommand(args[0])._getUsage(args[1:])
 
     ### @todo de-duplicate code (with SuperCommand)
     def _getHelpSections(self, args):
@@ -281,3 +282,9 @@ class SuperCommand(Command, _CommandContainer):
             return [self._getHelpForOptions(), self._getHelpForCommands()]
         else:
             return [self._getHelpForOptions()] + self._getCommand(args[0])._getHelpSections(args[1:])
+
+    def _getUsage(self, args):
+        if len(args) == 0:
+            return Command._getUsage(self, args) + " sub-command [options]"
+        else:
+            return Command._getUsage(self, args) + " " + self._getCommand(args[0])._getUsage(args[1:])
