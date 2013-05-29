@@ -259,3 +259,12 @@ class StoringOption(Option):
         else:
             setattr(self.__container, self.__attribute, self.__deactivationValue)
             return args
+
+
+class SuperCommand(Command, _CommandContainer):
+    def __init__(self, name, shortHelp):
+        Command.__init__(self, name, shortHelp)
+        _CommandContainer.__init__(self, name)
+
+    def execute(self, *args):
+        self._executeCommand(args)

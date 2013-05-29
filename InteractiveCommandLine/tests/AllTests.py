@@ -18,3 +18,4 @@ from SimpleOptions import *
 from AutoHelp import *
 from Misc import *
 from Grouping import *
+from SubCommands import *
