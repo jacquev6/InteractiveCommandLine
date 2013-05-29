@@ -76,30 +76,32 @@ class SuperCommandTestCase(unittest.TestCase):
         """))
         self.program._execute("help")
 
-    # def testDocOfSuperCommand(self):
-    #     self.output.expect.write(textwrap.dedent("""\
-    #     Usage:
-    #       Command-line mode:  program foo [options] sub-command [options]
-    #       Interactive mode:   foo [options] sub-command [options]
+    def testDocOfSuperCommand(self):
+        ### @todo Usage should be program foo [foo-options] sub-command [options]
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode:  program foo [foo-options]
+          Interactive mode:   foo [foo-options]
 
-    #     Options:
-    #       --super-command-option  A super-command option
+        Options of command 'foo':
+          --super-command-option  A super-command option
 
-    #     Sub-commands:
-    #       bar  barbaz a frobnicator
-    #     """))
-    #     self.program._execute("help", "foo")
+        Sub-commands:
+          bar  barbaz a frobnicator
+        """))
+        self.program._execute("help", "foo")
 
-    # def testDocOfSubCommand(self):
-    #     self.output.expect.write(textwrap.dedent("""\
-    #     Usage:
-    #       Command-line mode:  program foo [options] bar [options]
-    #       Interactive mode:   foo [options] bar [options]
+    def testDocOfSubCommand(self):
+        ### @todo Usage should be program foo [foo-options] bar [bar-options]
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode:  program foo [foo-options]
+          Interactive mode:   foo [foo-options]
 
-    #     Options:
-    #       --super-command-option  A super-command option
+        Options of command 'foo':
+          --super-command-option  A super-command option
 
-    #     Options:
-    #       --sub-command-option  A sub-command option
-    #     """))
-    #     self.program._execute("help", "foo", "bar")
+        Options of command 'bar':
+          --sub-command-option  A sub-command option
+        """))
+        self.program._execute("help", "foo", "bar")

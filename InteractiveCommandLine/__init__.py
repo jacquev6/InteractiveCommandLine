@@ -111,6 +111,8 @@ class Command(_OptionContainer):
         arguments = self._consumeOptions(arguments, "--")
         self.execute(*arguments)
 
+    def _getHelpSections(self, args):
+        return [self._getHelpForOptions()]
 
 class _CommandGroup:
     def __init__(self, container, name):
@@ -198,36 +200,46 @@ class Program(_CommandContainer, _OptionContainer):
                 self.__output = output
 
             def execute(self, *args):
-                self.__output.write(self.__program._getHelp(*args).format())
+                self.__output.write(self.__program._getHelp(args).format())
 
         self.addCommand(Help(self, self.__output))
 
-    def _getHelp(self, *args):
+    def _getHelp(self, args):
         doc = recdoc.Document()
-        programUsage = self._getUsage("global-options")
-        if len(args) == 0:
-            commandUsage1 = "command [options]"
-            commandUsage2 = programUsage
-        else:
-            commandName = args[0]
-            commandUsage1 = self._getCommand(commandName)._getUsage(commandName + "-options")
-            commandUsage2 = commandUsage1
 
         doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
-            "Command-line mode:", programUsage + " " + commandUsage1
+            "Command-line mode:", self._getCommandLineUsage(args)
         ).add(
-            "Interactive mode:", commandUsage2
+            "Interactive mode:", self._getInteractiveUsage(args)
         )))
-        doc.add(self._getHelpForOptions())
 
-        if len(args) == 0:
-            mainSection = self._getHelpForCommands()
-        else:
-            mainSection = self._getCommand(commandName)._getHelpForOptions()
-
-        doc.add(mainSection)
+        for s in self._getHelpSections(args):
+            doc.add(s)
 
         return doc
+
+    def _getCommandLineUsage(self, args):
+        programUsage = self._getUsage("global-options")
+        if len(args) == 0:
+            return programUsage + " command [options]"
+        else:
+            commandName = args[0]
+            commandUsage = self._getCommand(commandName)._getUsage(commandName + "-options")
+            return programUsage + " " + commandUsage
+
+    def _getInteractiveUsage(self, args):
+        if len(args) == 0:
+            return self._getUsage("global-options")
+        else:
+            commandName = args[0]
+            return self._getCommand(commandName)._getUsage(commandName + "-options")
+
+    ### @todo de-duplicate code (with SuperCommand)
+    def _getHelpSections(self, args):
+        if len(args) == 0:
+            return [self._getHelpForOptions(), self._getHelpForCommands()]
+        else:
+            return [self._getHelpForOptions()] + self._getCommand(args[0])._getHelpSections(args[1:])
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
@@ -258,7 +270,14 @@ class StoringOption(Option):
 class SuperCommand(Command, _CommandContainer):
     def __init__(self, name, shortHelp):
         Command.__init__(self, name, shortHelp)
-        _CommandContainer.__init__(self, name)
+        _CommandContainer.__init__(self, "Sub-commands")
 
     def execute(self, *args):
         self._executeCommand(args)
+
+    ### @todo de-duplicate code (with Program)
+    def _getHelpSections(self, args):
+        if len(args) == 0:
+            return [self._getHelpForOptions(), self._getHelpForCommands()]
+        else:
+            return [self._getHelpForOptions()] + self._getCommand(args[0])._getHelpSections(args[1:])
