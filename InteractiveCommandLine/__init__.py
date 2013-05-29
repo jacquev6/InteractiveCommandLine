@@ -47,15 +47,18 @@ class _OptionGroup:
         self.__container._addOption(option)
 
     def _getHelpForOptions(self):
-        help = recdoc.Section(self.__name)
-        if len(self.__options) != 0:
-            dl = recdoc.DefinitionList()
-            help.add(dl)
-            for option in sorted(self.__options, key=lambda o: o.name):
-                dl.add("--" + option.name, option.shortHelp)
-        for group in sorted(self.__groups, key=lambda g: g.__name):
-            help.add(group._getHelpForOptions())
-        return help
+        if len(self.__options) + len(self.__groups) != 0:
+            help = recdoc.Section(self.__name)
+            if len(self.__options) != 0:
+                dl = recdoc.DefinitionList()
+                help.add(dl)
+                for option in self.__options:
+                    dl.add("--" + option.name, option.shortHelp)
+            for group in self.__groups:
+                help.add(group._getHelpForOptions())
+            return help
+        else:
+            return None
 
 
 class _OptionContainer(_OptionGroup):
@@ -91,8 +94,11 @@ class _OptionContainer(_OptionGroup):
 
         return arguments
 
-    def _hasOptions(self):
-        return len(self.__options) != 0
+    def _getUsage(self, options):
+        usage = self.name
+        if len(self.__options) != 0:
+            usage += " [" + options + "]"
+        return usage
 
 
 class Command(_OptionContainer):
@@ -123,13 +129,14 @@ class _CommandGroup:
         self.__container._addCommand(command)
 
     def _getHelpForCommands(self):
+        assert len(self.__commands) + len(self.__groups) != 0
         help = recdoc.Section(self.__name)
         if len(self.__commands) != 0:
             dl = recdoc.DefinitionList()
             help.add(dl)
-            for command in sorted(self.__commands, key=lambda c: c.name):
+            for command in self.__commands:
                 dl.add(command.name, command.shortHelp)
-        for group in sorted(self.__groups, key=lambda g: g.__name):
+        for group in self.__groups:
             help.add(group._getHelpForCommands())
         return help
 
@@ -142,27 +149,14 @@ class _CommandContainer(_CommandGroup):
     def _addCommand(self, command):
         self.__commands[command.name] = command
 
-    def __getCommand(self, commandName):
+    def _getCommand(self, commandName):
         if commandName in self.__commands:
             return self.__commands[commandName]
         else:
             raise Exception("Unknown command '" + commandName + "'")
 
     def _executeCommand(self, arguments):
-        self.__getCommand(arguments[0])._execute(arguments[1:])
-
-    def _getHelpForCommandOptions(self, commandName):
-        command = self.__getCommand(commandName)
-        if command._hasOptions():
-            return command._getHelpForOptions()
-        else:
-            return None
-
-    def _getCommandUsage(self, commandName):
-        usage = commandName
-        if self.__getCommand(commandName)._hasOptions():
-            usage += " [options]"
-        return usage
+        self._getCommand(arguments[0])._execute(arguments[1:])
 
 
 class Program(_CommandContainer, _OptionContainer):
@@ -204,36 +198,36 @@ class Program(_CommandContainer, _OptionContainer):
                 self.__output = output
 
             def execute(self, *args):
-                if len(args) == 0:
-                    doc = self.__getHelpForProgram()
-                else:
-                    doc = self.__getHelpForCommand(args[0])
-                self.__output.write(doc.format())
-
-            def __getHelpForProgram(self):
-                doc = recdoc.Document()
-                doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
-                    "Command-line mode:", self.__program.name + " [global-options] command [options]"
-                ).add(
-                    "Interactive mode:", self.__program.name + " [global-options]"
-                )))
-                doc.add(self.__program._getHelpForOptions())
-                doc.add(self.__program._getHelpForCommands())
-                return doc
-
-            def __getHelpForCommand(self, commandName):
-                doc = recdoc.Document()
-                commandUsage = self.__program._getCommandUsage(commandName)
-                doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
-                    "Command-line mode:", self.__program.name + " [global-options] " + commandUsage
-                ).add(
-                    "Interactive mode:", commandUsage
-                )))
-                doc.add(self.__program._getHelpForOptions())
-                doc.add(self.__program._getHelpForCommandOptions(commandName))
-                return doc
+                self.__output.write(self.__program._getHelp(*args).format())
 
         self.addCommand(Help(self, self.__output))
+
+    def _getHelp(self, *args):
+        doc = recdoc.Document()
+        programUsage = self._getUsage("global-options")
+        if len(args) == 0:
+            commandUsage1 = "command [options]"
+            commandUsage2 = programUsage
+        else:
+            commandName = args[0]
+            commandUsage1 = self._getCommand(commandName)._getUsage("options")
+            commandUsage2 = commandUsage1
+
+        doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
+            "Command-line mode:", programUsage + " " + commandUsage1
+        ).add(
+            "Interactive mode:", commandUsage2
+        )))
+        doc.add(self._getHelpForOptions())
+
+        if len(args) == 0:
+            mainSection = self._getHelpForCommands()
+        else:
+            mainSection = self._getCommand(commandName)._getHelpForOptions()
+
+        doc.add(mainSection)
+
+        return doc
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])

@@ -67,14 +67,12 @@ class SuperCommandTestCase(unittest.TestCase):
     def testDoc(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  program [global-options] command [options]
-          Interactive mode:   program [global-options]
-
-        Global options:
+          Command-line mode:  program command [options]
+          Interactive mode:   program
 
         Commands:
-          foo   a super command
           help  Display this help message
+          foo   a super command
         """))
         self.program._execute("help")
 
@@ -82,10 +80,8 @@ class SuperCommandTestCase(unittest.TestCase):
         ### @todo Sub-commands
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  program [global-options] foo [options]
+          Command-line mode:  program foo [options]
           Interactive mode:   foo [options]
-
-        Global options:
 
         Options:
           --super-command-option  A super-command option
@@ -94,12 +90,11 @@ class SuperCommandTestCase(unittest.TestCase):
 
     def testDocOfSubCommand(self):
         ### @todo List options of sub-command
+        ### Command-line mode should be "program foo bar [options]"
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  program [global-options] foo [options]
+          Command-line mode:  program foo [options]
           Interactive mode:   foo [options]
-
-        Global options:
 
         Options:
           --super-command-option  A super-command option

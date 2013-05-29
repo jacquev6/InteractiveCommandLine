@@ -43,10 +43,8 @@ class CommandGrouping(unittest.TestCase):
 
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  program [global-options] command [options]
-          Interactive mode:   program [global-options]
-
-        Global options:
+          Command-line mode:  program command [options]
+          Interactive mode:   program
 
         Commands:
           help  Display this help message
@@ -83,10 +81,8 @@ class CommandGrouping(unittest.TestCase):
 
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  program [global-options] command [options]
-          Interactive mode:   program [global-options]
-
-        Global options:
+          Command-line mode:  program command [options]
+          Interactive mode:   program
 
         Commands:
           help  Display this help message

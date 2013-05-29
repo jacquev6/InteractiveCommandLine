@@ -21,7 +21,7 @@ import MockMockMock
 from InteractiveCommandLine import Program, Command, Option, StoringOption
 
 
-class AutoHelp(unittest.TestCase):
+class AutoHelpWithOptions(unittest.TestCase):
     def setUp(self):
         self.mocks = MockMockMock.Engine()
         self.input = self.mocks.create("input")
@@ -74,14 +74,37 @@ class AutoHelp(unittest.TestCase):
         """))
         self.program._execute("help", "test")
 
-    def testCommandLineCommandHelpWithoutCommandOption(self):
+
+class AutoHelpWithoutOptions(unittest.TestCase):
+    def setUp(self):
+        self.mocks = MockMockMock.Engine()
+        self.input = self.mocks.create("input")
+        self.output = self.mocks.create("output")
+
+        self.command = Command("test", "A test command")
+
+        self.program = Program("example", self.input.object, self.output.object)
+        self.program.addCommand(self.command)
+
+    def tearDown(self):
+        self.mocks.tearDown()
+
+    def testCommandLineProgramHelp(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  example [global-options] help
-          Interactive mode:   help
+          Command-line mode:  example command [options]
+          Interactive mode:   example
 
-        Global options:
-          --program-option  A program option
-          --storing-option  A storing option
+        Commands:
+          help  Display this help message
+          test  A test command
         """))
-        self.program._execute("help", "help")
+        self.program._execute("help")
+
+    def testCommandLineCommandHelp(self):
+        self.output.expect.write(textwrap.dedent("""\
+        Usage:
+          Command-line mode:  example test
+          Interactive mode:   test
+        """))
+        self.program._execute("help", "test")
