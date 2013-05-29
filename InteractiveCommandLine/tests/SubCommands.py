@@ -76,27 +76,30 @@ class SuperCommandTestCase(unittest.TestCase):
         """))
         self.program._execute("help")
 
-    def testDocOfSuperCommand(self):
-        ### @todo Sub-commands
-        self.output.expect.write(textwrap.dedent("""\
-        Usage:
-          Command-line mode:  program foo [options]
-          Interactive mode:   foo [options]
+    # def testDocOfSuperCommand(self):
+    #     self.output.expect.write(textwrap.dedent("""\
+    #     Usage:
+    #       Command-line mode:  program foo [options] sub-command [options]
+    #       Interactive mode:   foo [options] sub-command [options]
 
-        Options:
-          --super-command-option  A super-command option
-        """))
-        self.program._execute("help", "foo")
+    #     Options:
+    #       --super-command-option  A super-command option
 
-    def testDocOfSubCommand(self):
-        ### @todo List options of sub-command
-        ### Command-line mode should be "program foo bar [options]"
-        self.output.expect.write(textwrap.dedent("""\
-        Usage:
-          Command-line mode:  program foo [options]
-          Interactive mode:   foo [options]
+    #     Sub-commands:
+    #       bar  barbaz a frobnicator
+    #     """))
+    #     self.program._execute("help", "foo")
 
-        Options:
-          --super-command-option  A super-command option
-        """))
-        self.program._execute("help", "foo", "bar")
+    # def testDocOfSubCommand(self):
+    #     self.output.expect.write(textwrap.dedent("""\
+    #     Usage:
+    #       Command-line mode:  program foo [options] bar [options]
+    #       Interactive mode:   foo [options] bar [options]
+
+    #     Options:
+    #       --super-command-option  A super-command option
+
+    #     Options:
+    #       --sub-command-option  A sub-command option
+    #     """))
+    #     self.program._execute("help", "foo", "bar")

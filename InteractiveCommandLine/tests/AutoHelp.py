@@ -62,14 +62,14 @@ class AutoHelpWithOptions(unittest.TestCase):
     def testCommandLineCommandHelp(self):
         self.output.expect.write(textwrap.dedent("""\
         Usage:
-          Command-line mode:  example [global-options] test [options]
-          Interactive mode:   test [options]
+          Command-line mode:  example [global-options] test [test-options]
+          Interactive mode:   test [test-options]
 
         Global options:
           --program-option  A program option
           --storing-option  A storing option
 
-        Options:
+        Options of command 'test':
           --command-option  A command option
         """))
         self.program._execute("help", "test")

@@ -103,7 +103,7 @@ class _OptionContainer(_OptionGroup):
 
 class Command(_OptionContainer):
     def __init__(self, name, shortHelp):
-        _OptionContainer.__init__(self, "Options")
+        _OptionContainer.__init__(self, "Options of command '" + name + "'")
         self.name = name
         self.shortHelp = shortHelp
 
@@ -210,7 +210,7 @@ class Program(_CommandContainer, _OptionContainer):
             commandUsage2 = programUsage
         else:
             commandName = args[0]
-            commandUsage1 = self._getCommand(commandName)._getUsage("options")
+            commandUsage1 = self._getCommand(commandName)._getUsage(commandName + "-options")
             commandUsage2 = commandUsage1
 
         doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
