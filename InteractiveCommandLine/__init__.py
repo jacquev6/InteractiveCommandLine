@@ -18,7 +18,7 @@ import sys
 import shlex
 
 # Third party libraries
-import recdoc as rd
+import recdoc
 
 
 class Option:
@@ -47,9 +47,9 @@ class _OptionGroup:
         self.__container._addOption(option)
 
     def _getHelpForOptions(self):
-        help = rd.Section(self.__name)
+        help = recdoc.Section(self.__name)
         if len(self.__options) != 0:
-            dl = rd.DefinitionList()
+            dl = recdoc.DefinitionList()
             help.add(dl)
             for option in sorted(self.__options, key=lambda o: o.name):
                 dl.add("--" + option.name, option.shortHelp)
@@ -123,9 +123,9 @@ class _CommandGroup:
         self.__container._addCommand(command)
 
     def _getHelpForCommands(self):
-        help = rd.Section(self.__name)
+        help = recdoc.Section(self.__name)
         if len(self.__commands) != 0:
-            dl = rd.DefinitionList()
+            dl = recdoc.DefinitionList()
             help.add(dl)
             for command in sorted(self.__commands, key=lambda c: c.name):
                 dl.add(command.name, command.shortHelp)
@@ -156,7 +156,7 @@ class _CommandContainer(_CommandGroup):
         if command._hasOptions():
             return command._getHelpForOptions()
         else:
-            return rd.Paragraph("No command options")
+            return None
 
     def _getCommandUsage(self, commandName):
         usage = commandName
@@ -211,8 +211,8 @@ class Program(_CommandContainer, _OptionContainer):
                 self.__output.write(doc.format())
 
             def __getHelpForProgram(self):
-                doc = rd.Document()
-                doc.add(rd.Section("Usage").add(rd.DefinitionList().add(
+                doc = recdoc.Document()
+                doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
                     "Command-line mode:", self.__program.name + " [global-options] command [options]"
                 ).add(
                     "Interactive mode:", self.__program.name + " [global-options]"
@@ -222,9 +222,9 @@ class Program(_CommandContainer, _OptionContainer):
                 return doc
 
             def __getHelpForCommand(self, commandName):
-                doc = rd.Document()
+                doc = recdoc.Document()
                 commandUsage = self.__program._getCommandUsage(commandName)
-                doc.add(rd.Section("Usage").add(rd.DefinitionList().add(
+                doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
                     "Command-line mode:", self.__program.name + " [global-options] " + commandUsage
                 ).add(
                     "Interactive mode:", commandUsage
