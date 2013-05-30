@@ -59,7 +59,7 @@ class _CommandGroup:
             dl = recdoc.DefinitionList()
             help.add(dl)
             for command in self.__commands:
-                dl.add(command.name, command.shortHelp)
+                dl.add(command.name, recdoc.Paragraph(command.shortHelp))
         for group in self.__groups:
             help.add(group._getHelpForCommands())
         return help

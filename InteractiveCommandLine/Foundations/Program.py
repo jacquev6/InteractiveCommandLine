@@ -72,9 +72,9 @@ class Program(_CommandContainer, _OptionContainer):
         doc = recdoc.Document()
 
         doc.add(recdoc.Section("Usage").add(recdoc.DefinitionList().add(
-            "Command-line mode:", self._getCommandLineUsage(args)
+            "Command-line mode:", recdoc.Paragraph(self._getCommandLineUsage(args))
         ).add(
-            "Interactive mode:", self._getInteractiveUsage(args)
+            "Interactive mode:", recdoc.Paragraph(self._getInteractiveUsage(args))
         )))
 
         for s in self._getHelpSections(args):

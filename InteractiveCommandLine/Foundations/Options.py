@@ -49,7 +49,7 @@ class _OptionGroup:
                 dl = recdoc.DefinitionList()
                 help.add(dl)
                 for option in self.__options:
-                    dl.add("--" + option.name, option.shortHelp)
+                    dl.add("--" + option.name, recdoc.Paragraph(option.shortHelp))
             for group in self.__groups:
                 help.add(group._getHelpForOptions())
             return help
