@@ -47,6 +47,21 @@ class StoringOption(Option):
         return self.__activationValue.getParameters()
 
 
+class AppendingOption(Option):
+    def __init__(self, name, shortHelp, container, activationValue):
+        Option.__init__(self, name, shortHelp)
+        self.__container = container
+        self.__activationValue = activationValue
+
+    def activate(self, *args):
+        value, args = self.__activationValue.extract(args)
+        self.__container.append(value)
+        return args
+
+    def _getParameters(self):
+        return self.__activationValue.getParameters()
+
+
 class ConstantValue:
     def __init__(self, value):
         self.__value = value

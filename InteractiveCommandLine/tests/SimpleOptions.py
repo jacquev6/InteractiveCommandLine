@@ -17,7 +17,7 @@ import unittest
 
 import MockMockMock
 
-from InteractiveCommandLine import StoringOption, ConstantValue, ValueFromOneArgument
+from InteractiveCommandLine import StoringOption, AppendingOption, ConstantValue, ValueFromOneArgument
 
 
 class DeactivateableStoringOption(unittest.TestCase):
@@ -72,6 +72,7 @@ class NonDeactivateableStoringOption(unittest.TestCase):
             self.__option.deactivate()
         self.assertEqual(str(cm.exception), "Option 'name' cannot be deactivated")
 
+
 class StoringOptionFromOneArgument(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
@@ -89,3 +90,17 @@ class StoringOptionFromOneArgument(unittest.TestCase):
 
     def testHelp(self):
         self.assertEqual(self.__option._getHelp()[0], "--name FOOS")
+
+
+class AppendingOptionTestCase(unittest.TestCase):
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+        self.__container = []
+        self.__option = AppendingOption("name", "add FOO", self.__container, ValueFromOneArgument("FOO"))
+
+    def testActivateActivates(self):
+        self.__option.activate("xxx")
+        self.assertEqual(self.__container, ["xxx"])
+        self.__option.activate("yyy")
+        self.assertEqual(self.__container, ["xxx", "yyy"])
