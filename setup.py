@@ -32,6 +32,7 @@ if __name__ == "__main__":
         """),
         packages=[
             "InteractiveCommandLine",
+            "InteractiveCommandLine.Foundations",
             "InteractiveCommandLine.tests",
         ],
         package_data={
