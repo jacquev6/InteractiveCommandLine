@@ -18,7 +18,7 @@ import textwrap
 
 import MockMockMock
 
-from InteractiveCommandLine import Program, Command, Option, StoringOption
+from InteractiveCommandLine import Program, Command, Option, StoringOption, ConstantValue
 
 
 class AutoHelpWithOptions(unittest.TestCase):
@@ -30,7 +30,7 @@ class AutoHelpWithOptions(unittest.TestCase):
         self.commandOption = Option("command-option", "A command option")
 
         self.programOption = Option("program-option", "A program option")
-        self.storingOption = StoringOption("storing-option", "A storing option", None, None, True, False)
+        self.storingOption = StoringOption("storing-option", "A storing option", None, None, ConstantValue(True), ConstantValue(False))
 
         self.command = Command("test", "A test command")
         self.command.addOption(self.commandOption)

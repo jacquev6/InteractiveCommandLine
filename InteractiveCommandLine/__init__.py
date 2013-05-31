@@ -17,4 +17,4 @@
 from .Foundations.Options import Option
 from .Foundations.Commands import Command
 from .Foundations.Program import Program
-from .HigherLevel import StoringOption, SuperCommand
+from .HigherLevel import *

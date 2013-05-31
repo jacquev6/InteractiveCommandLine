@@ -25,6 +25,12 @@ class Option:
     def deactivate(self, *args):
         raise Exception("Option '" + self.name + "' cannot be deactivated")
 
+    def _getHelp(self):
+        return ("--" + self.name + "".join(" " + p for p in self._getParameters()), recdoc.Paragraph(self.shortHelp))
+
+    def _getParameters(self):
+        return []
+
 
 class _OptionGroup:
     def __init__(self, container, name):
@@ -49,7 +55,7 @@ class _OptionGroup:
                 dl = recdoc.DefinitionList()
                 help.add(dl)
                 for option in self.__options:
-                    dl.add("--" + option.name, recdoc.Paragraph(option.shortHelp))
+                    dl.add(*option._getHelp())
             for group in self.__groups:
                 help.add(group._getHelpForOptions())
             return help

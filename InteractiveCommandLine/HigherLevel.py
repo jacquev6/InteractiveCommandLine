@@ -31,15 +31,43 @@ class StoringOption(Option):
         self.__deactivationValue = deactivationValue
 
     def activate(self, *args):
-        setattr(self.__container, self.__attribute, self.__activationValue)
+        value, args = self.__activationValue.extract(args)
+        setattr(self.__container, self.__attribute, value)
         return args
 
     def deactivate(self, *args):
         if self.__deactivationValue is self.__noDeactivationValue:
             return Option.deactivate(self, *args)
         else:
-            setattr(self.__container, self.__attribute, self.__deactivationValue)
+            value, args = self.__deactivationValue.extract(args)
+            setattr(self.__container, self.__attribute, value)
             return args
+
+    def _getParameters(self):
+        return self.__activationValue.getParameters()
+
+
+class ConstantValue:
+    def __init__(self, value):
+        self.__value = value
+
+    def extract(self, args):
+        return self.__value, args
+
+    def getParameters(self):
+        return []
+
+
+class ValueFromOneArgument:
+    def __init__(self, name, parser=lambda s: s):
+        self.__name = name
+        self.__parser = parser
+
+    def extract(self, args):
+        return self.__parser(args[0]), args[1:]
+
+    def getParameters(self):
+        return [self.__name]
 
 
 class SuperCommand(Command, _CommandContainer):

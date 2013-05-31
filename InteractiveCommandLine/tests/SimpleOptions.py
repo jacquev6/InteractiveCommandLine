@@ -17,7 +17,7 @@ import unittest
 
 import MockMockMock
 
-from InteractiveCommandLine import StoringOption
+from InteractiveCommandLine import StoringOption, ConstantValue, ValueFromOneArgument
 
 
 class DeactivateableStoringOption(unittest.TestCase):
@@ -31,7 +31,7 @@ class DeactivateableStoringOption(unittest.TestCase):
         self.__container = Container()
         self.__activationValue = (42,)
         self.__deactivationValue = (56,)
-        self.__option = StoringOption("name", "short help", self.__container, "attribute", self.__activationValue, self.__deactivationValue)
+        self.__option = StoringOption("name", "short help", self.__container, "attribute", ConstantValue(self.__activationValue), ConstantValue(self.__deactivationValue))
 
     def testCOnstructionDoesNotTouchContainer(self):
         self.assertIsNone(self.__container.attribute)
@@ -61,7 +61,7 @@ class NonDeactivateableStoringOption(unittest.TestCase):
 
         self.__container = Container()
         self.__activationValue = (42,)
-        self.__option = StoringOption("name", "short help", self.__container, "attribute", self.__activationValue)
+        self.__option = StoringOption("name", "short help", self.__container, "attribute", ConstantValue(self.__activationValue))
 
     def testActivateActivates(self):
         self.__option.activate()
@@ -71,3 +71,21 @@ class NonDeactivateableStoringOption(unittest.TestCase):
         with self.assertRaises(Exception) as cm:
             self.__option.deactivate()
         self.assertEqual(str(cm.exception), "Option 'name' cannot be deactivated")
+
+class StoringOptionFromOneArgument(unittest.TestCase):
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+
+        class Container:
+            def __init__(self):
+                self.attribute = None
+
+        self.__container = Container()
+        self.__option = StoringOption("name", "short help", self.__container, "attribute", ValueFromOneArgument("FOOS", int))
+
+    def testActivate(self):
+        self.assertEqual(self.__option.activate("42", "foobar"), ("foobar",))
+        self.assertEqual(self.__container.attribute, 42)
+
+    def testHelp(self):
+        self.assertEqual(self.__option._getHelp()[0], "--name FOOS")
