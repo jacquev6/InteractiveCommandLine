@@ -13,6 +13,9 @@
 
 # You should have received a copy of the GNU Lesser General Public License along with InteractiveCommandLine.  If not, see <http://www.gnu.org/licenses/>.
 
+# Third party libraries
+import recdoc
+
 # Project
 from .Foundations.Options import Option
 from .Foundations.Commands import Command, _CommandContainer
@@ -48,11 +51,12 @@ class SuperCommand(Command, _CommandContainer):
         self._executeCommand(args)
 
     ### @todo de-duplicate code (with Program)
-    def _getHelpSections(self, args):
+    def _getHelp(self, args):
+        help = recdoc.Container().add(self._getHelpForOptions())
         if len(args) == 0:
-            return [self._getHelpForOptions(), self._getHelpForCommands()]
+            return help.add(self._getHelpForCommands())
         else:
-            return [self._getHelpForOptions()] + self._getCommand(args[0])._getHelpSections(args[1:])
+            return help.add(self._getCommand(args[0])._getHelp(args[1:]))
 
     def _getUsage(self, args):
         if len(args) == 0:

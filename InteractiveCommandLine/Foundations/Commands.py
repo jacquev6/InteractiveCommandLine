@@ -30,8 +30,8 @@ class Command(_OptionContainer):
         arguments = self._consumeOptions(arguments, "--")
         self.execute(*arguments)
 
-    def _getHelpSections(self, args):
-        return [self._getHelpForOptions()]
+    def _getHelp(self, args):
+        return self._getHelpForOptions()
 
     def _getUsage(self, args):
         return self._getUsageForOptions(self.name + "-options")

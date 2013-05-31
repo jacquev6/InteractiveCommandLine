@@ -77,8 +77,7 @@ class Program(_CommandContainer, _OptionContainer):
             "Interactive mode:", recdoc.Paragraph(self._getInteractiveUsage(args))
         )))
 
-        for s in self._getHelpSections(args):
-            doc.add(s)
+        doc.add(self._getHelpContents(args))
 
         return doc
 
@@ -97,11 +96,12 @@ class Program(_CommandContainer, _OptionContainer):
             return self._getCommand(args[0])._getUsage(args[1:])
 
     ### @todo de-duplicate code (with SuperCommand)
-    def _getHelpSections(self, args):
+    def _getHelpContents(self, args):
+        sections = recdoc.Container().add(self._getHelpForOptions())
         if len(args) == 0:
-            return [self._getHelpForOptions(), self._getHelpForCommands()]
+            return sections.add(self._getHelpForCommands())
         else:
-            return [self._getHelpForOptions()] + self._getCommand(args[0])._getHelpSections(args[1:])
+            return sections.add(self._getCommand(args[0])._getHelp(args[1:]))
 
     def execute(self):  # pragma no cover
         self._execute(*sys.argv[1:])
