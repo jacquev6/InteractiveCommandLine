@@ -36,6 +36,7 @@ class Command(_OptionContainer):
     def _getUsage(self, args):
         return self._getUsageForOptions(self.name + "-options")
 
+
 class _CommandGroup:
     def __init__(self, container, name):
         self.__container = container

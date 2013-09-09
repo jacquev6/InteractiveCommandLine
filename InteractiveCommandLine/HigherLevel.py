@@ -20,6 +20,7 @@ import recdoc
 from .Foundations.Options import Option
 from .Foundations.Commands import Command, _CommandContainer
 
+
 class StoringOption(Option):
     __noDeactivationValue = (None,)
 
