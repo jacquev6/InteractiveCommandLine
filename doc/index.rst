@@ -1,3 +1,15 @@
+======================
+InteractiveCommandLine
+======================
+
+.. include:: ../README.rst
+
+User guide
+==========
+
 .. automodule:: InteractiveCommandLine
-   :members:
-   :inherited-members:
+
+Reference
+=========
+
+@todoc Reference

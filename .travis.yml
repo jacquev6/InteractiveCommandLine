@@ -1,6 +1,20 @@
 language: python
 python:
-  - "2.7"
-  - "3.3"
+- 2.7
+- 3.3
+- 3.4
+install:
+- pip install sphinx coveralls
 script:
-  - python setup.py test
+- coverage run "--include=InteractiveCommandLine/*" setup.py test
+after_success:
+- coveralls
+deploy:
+  provider: pypi
+  user: jacquev6
+  password:
+    secure: bQmeWbpLlIzX8CPvkAXao0lYm2kFWLOTD3EA9WN+Ygm6+LahPYHl575J6hgFJq5XcyPe9OwEOWsm1PFaPMRIgn8r7Ah5+WgdRJswY062XPN+G7GD13Qjtn+IoxqG94pHDuZsFaKjpboaAkyywUO1VMJAOpeNJ2CxhAq04E5RTJ0=
+  on:
+    tags: true
+    repo: jacquev6/InteractiveCommandLine
+    python: 2.7
