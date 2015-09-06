@@ -29,6 +29,12 @@ Questions? Remarks? Bugs? Want to contribute? `Open an issue <https://github.com
 .. image:: https://img.shields.io/pypi/v/InteractiveCommandLine.svg
     :target: https://pypi.python.org/pypi/InteractiveCommandLine
 
+.. image:: https://img.shields.io/pypi/pyversions/InteractiveCommandLine.svg
+    :target: https://pypi.python.org/pypi/InteractiveCommandLine
+
+.. image:: https://img.shields.io/pypi/status/InteractiveCommandLine.svg
+    :target: https://pypi.python.org/pypi/InteractiveCommandLine
+
 .. image:: https://img.shields.io/github/issues/jacquev6/InteractiveCommandLine.svg
     :target: https://github.com/jacquev6/InteractiveCommandLine/issues
 
