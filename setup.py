@@ -5,13 +5,14 @@
 
 import setuptools
 
-version = "0.3.3"
+version = "0.3.4"
 
 
 setuptools.setup(
     name="InteractiveCommandLine",
     version=version,
     description="Framework for interactive and command-line programs.",
+    long_description=open("README.rst").read(),
     author="Vincent Jacques",
     author_email="vincent@vincent-jacques.net",
     url="http://pythonhosted.org/InteractiveCommandLine",
