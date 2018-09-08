@@ -5,7 +5,7 @@
 
 import setuptools
 
-version = "0.3.1"
+version = "0.3.2"
 
 
 setuptools.setup(
@@ -18,7 +18,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     license="MIT",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 7 - Inactive",
         "Intended Audience :: Developers",
         "License :: OSI Approved",
         "License :: OSI Approved :: MIT License",

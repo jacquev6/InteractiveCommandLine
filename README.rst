@@ -1,3 +1,6 @@
+**DO NOT USE THIS LIBRARY**: the `click <http://click.pocoo.org/>`_ library is vastly better.
+I will not fix anything in this library and I'm migrating my own projects to ``click``.
+
 InteractiveCommandLine is a Python (2.7+ and 3.3+) framework for git-style command line interface
 (main program, commands, sub-commands) *and* shell-like interface, with prompt.
 
@@ -5,8 +8,6 @@ It's licensed under the `MIT license <http://choosealicense.com/licenses/mit/>`_
 It's available on the `Python package index <http://pypi.python.org/pypi/InteractiveCommandLine>`__,
 its `documentation is hosted by Python <http://pythonhosted.org/InteractiveCommandLine>`__
 and its source code is on `GitHub <https://github.com/jacquev6/InteractiveCommandLine>`__.
-
-Questions? Remarks? Bugs? Want to contribute? `Open an issue <https://github.com/jacquev6/InteractiveCommandLine/issues>`__!
 
 .. image:: https://img.shields.io/travis/jacquev6/InteractiveCommandLine/master.svg
     :target: https://travis-ci.org/jacquev6/InteractiveCommandLine
