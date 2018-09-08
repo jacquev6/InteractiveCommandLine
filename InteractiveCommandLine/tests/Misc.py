@@ -17,6 +17,6 @@ class CustomInvite(unittest.TestCase):
         p = Program("program", input.object, output.object, "Custom#")
 
         output.expect.write("Custom#")
-        input.expect.readline().andReturn("")
+        input.expect.readline().and_return("")
 
         p._execute()

@@ -44,12 +44,12 @@ class SuperCommandTestCase(unittest.TestCase):
         self.program._execute("foo", "bar")
 
     def testExecuteWithSuperCommandOption(self):
-        self.superCommandOptionActivate.expect("bar").andReturn(["bar"])
+        self.superCommandOptionActivate.expect("bar").and_return(["bar"])
         self.subCommandExecute.expect()
         self.program._execute("foo", "--super-command-option", "bar")
 
     def testExecuteWithSubCommandOption(self):
-        self.subCommandOptionActivate.expect().andReturn([])
+        self.subCommandOptionActivate.expect().and_return([])
         self.subCommandExecute.expect()
         self.program._execute("foo", "bar", "--sub-command-option")
 
